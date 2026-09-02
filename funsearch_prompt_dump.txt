@@ -1,0 +1,55 @@
+"""Snakey Achievement Game problem specification."""
+import itertools
+import numpy as np
+
+# Base coordinates of Snakey Hexomino (4-in-a-row bar + 2-cell step head)
+_BASE_SNAKY = [(0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (4, 1)]
+def _get_board_shapes(radius: int=4):
+  """Generates all translational instances of Snaky in D8 within [-radius, radius]^2."""
+  orientations = set()
+  for rot in range(4):
+    for ref in range(2):
+      s = _BASE_SNAKY
+      if ref:
+        s = [(-p[0], p[1]) for p in s]
+      for _ in range(rot):
+        s = [(p[1], -p[0]) for p in s]
+      mx = min(p[0] for p in s)
+      my = min(p[1] for p in s)
+      normalized = tuple(sorted((p[0] - mx, p[1] - my) for p in s))
+      orientations.add(normalized)
+
+  shapes = []
+  for ori in orientations:
+    for dx in range(-radius, radius + 1):
+      for dy in range(-radius, radius + 1):
+        translated = tuple(sorted((x + dx, y + dy) for x, y in ori))
+        if all(-radius <= x <= radius and -radius <= y <= radius for x, y in translated):
+          shapes.append(frozenset(translated))
+  return list(set(shapes))
+
+
+def priority_v0(candidate: tuple[int, int], maker_cells: list[tuple[int, int]], breaker_cells: list[tuple[int, int]], active_shapes: list[tuple[tuple[int, int], ...]]) -> float:
+  """Returns priority for Maker choosing `candidate` cell.
+
+Higher score means Maker prefers this cell."""
+  m_set = set(maker_cells)
+  b_set = set(breaker_cells)
+  score = 0.0
+
+  for shape in active_shapes:
+    if candidate in shape:
+      # Count how many cells Maker already owns in this shape
+      m_count = sum(1 for p in shape if p in m_set)
+      # Exponential weighting for advancing close-to-completion shapes
+      score += float(10 ** m_count)
+
+  # Center proximity bias (prefer compact central development)
+  score -= (abs(candidate[0]) + abs(candidate[1])) * 0.1
+  return score
+
+
+def priority_v1(candidate: tuple[int, int], maker_cells: list[tuple[int, int]], breaker_cells: list[tuple[int, int]], active_shapes: list[tuple[tuple[int, int], ...]]) -> float:
+  """Returns priority for Maker choosing `candidate` cell.
+
+Higher score means Maker prefers this cell."""

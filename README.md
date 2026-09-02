@@ -1,0 +1,208 @@
+# FunSearch Scratch
+
+An extensible, open-source implementation and interactive platform based on Google DeepMind's publication:
+
+> Romera-Paredes, B. et al. [Mathematical discoveries from program search with large language models](https://www.nature.com/articles/s41586-023-06924-6). *Nature* (2023).
+
+This framework couples Large Language Models (LLMs) with automated program evaluators and multi-island evolutionary search algorithms to discover new mathematical heuristics and algorithmic solutions.
+
+---
+
+## Key Features
+
+- 🧠 **Multi-LLM Samplers**: Native support for **Google Gemini 3.7 (Flash & Pro)**, **Gemini 2.5**, OpenAI models (GPT-4o), Anthropic, local Ollama / vLLM models, and an offline mock sampler for local testing without API keys.
+- 🛡️ **Isolated Process Sandbox**: Multi-process execution sandbox with strict per-test timeouts, exception trapping, and memory guards to safely run untrusted LLM-generated code.
+- 🏝️ **Islands Evolutionary Model**: Maintains multiple diverse populations (islands) with semantic behavioral signatures, temperature decay, and automated weak-island resetting.
+- 📊 **Rich Live Interactive Dashboard**: Real-time terminal UI showing search speed (evals/sec), island populations & temperatures, live event feed, and syntax-highlighted code of the best discovered heuristic.
+- 📐 **Standard Mathematical Benchmarks**: Pre-packaged problem suites for **Cap Set** ($(\mathbb{Z}_3)^n$), **1D Online Bin Packing**, and **Admissible Sets**.
+- 🛠️ **Custom Problem Support**: Define custom problems in seconds using simple `@funsearch.evolve` and `@funsearch.run` decorators.
+
+---
+
+## Architecture Overview
+
+```
+FunSearchScratch/
+├── funsearch/
+│   ├── core/
+│   │   ├── code_manipulation.py    # AST parser, function decorator validator & renamer
+│   │   ├── programs_database.py    # Multi-island database, cluster signatures, softmax tournament
+│   │   └── config.py               # Experiment & evolutionary hyperparameters
+│   ├── llm/
+│   │   ├── base.py                 # Abstract LLM & Sampler interfaces
+│   │   ├── gemini.py               # Google GenAI SDK (Gemini 3.7 / 2.5 Flash & Pro)
+│   │   ├── openai_client.py        # OpenAI / Ollama / Local LLM provider
+│   │   └── mock.py                 # Offline heuristic mutator for testing
+│   ├── sandbox/
+│   │   ├── base.py                 # Evaluator & code trimmer
+│   │   └── process_sandbox.py      # Subprocess isolation & timeout runner
+│   ├── ui/
+│   │   ├── live_dashboard.py       # Rich terminal UI layout
+│   │   └── logger.py               # JSONL event logger & program checkpoint persistence
+│   ├── problems/
+│   │   ├── cap_set.py              # Cap set problem in (Z_3)^n
+│   │   ├── bin_packing.py          # 1D Online Bin Packing benchmark
+│   │   └── admissible_set.py       # Combinatorial admissible set search
+│   ├── engine.py                   # Evolutionary coordinator
+│   └── cli.py                      # Interactive CLI entrypoint
+├── tests/                          # Full pytest test suite
+├── pyproject.toml
+└── requirements.txt
+```
+
+---
+
+## Installation & Setup
+
+1. **Clone or navigate to the repository**:
+   ```bash
+   cd /Users/austinanderson/GitHub/FunSearchScratch
+   ```
+
+2. **Activate the Python virtual environment**:
+   ```bash
+   source .venv/bin/activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -e .
+   ```
+
+4. **Set your API Key** (for Gemini or OpenAI):
+   ```bash
+   export GEMINI_API_KEY="your-gemini-api-key"
+   # or
+   export OPENAI_API_KEY="your-openai-api-key"
+   ```
+
+---
+
+## Quickstart & CLI Usage
+
+### 1. Run Snakey Polyomino Achievement Game with Gemini 3.7
+```bash
+python -m funsearch.cli \
+  --problem snakey \
+  --model gemini-3.7-pro \
+  --iterations 100 \
+  --samples-per-prompt 4 \
+  --islands 10
+```
+
+### 2. Run Cap Set with Gemini 3.7 Flash
+```bash
+python -m funsearch.cli \
+  --problem cap_set \
+  --model gemini-3.7-flash \
+  --iterations 50 \
+  --samples-per-prompt 2
+```
+
+### 3. Run Online Bin Packing with Gemini 3.7 Pro
+```bash
+python -m funsearch.cli \
+  --problem bin_packing \
+  --model gemini-3.7-pro \
+  --iterations 100 \
+  --islands 10 \
+  --timeout 20
+```
+
+### 4. Offline Test on Snakey (No API key needed)
+```bash
+python -m funsearch.cli \
+  --problem snakey \
+  --model mock \
+  --iterations 10
+```
+
+### 4. CLI Arguments Reference
+
+| Flag | Default | Description |
+| :--- | :--- | :--- |
+| `--problem` | `cap_set` | Problem name (`cap_set`, `bin_packing`, `admissible_set`) or path to custom `.py` file. |
+| `--model` | `gemini-3.7-flash` | Model name (`gemini-3.7-flash`, `gemini-3.7-pro`, `gemini-2.5-flash`, `gpt-4o`, `mock`). |
+| `--api-key` | `None` | Optional API key override (otherwise uses `GEMINI_API_KEY` / `OPENAI_API_KEY`). |
+| `--iterations` | `50` | Maximum number of prompt search iterations. |
+| `--samples-per-prompt`| `2` | Number of candidate continuations generated per prompt. |
+| `--islands` | `8` | Number of isolated populations (islands) in the evolutionary database. |
+| `--temperature` | `0.7` | LLM generation temperature. |
+| `--timeout` | `15` | Sandbox timeout per test case (in seconds). |
+| `--output-dir` | `./outputs` | Directory where discovered programs, checkpoints, and logs are saved. |
+| `--no-live` | `False` | Disable the Rich interactive live dashboard. |
+
+---
+
+## Defining Custom Problems
+
+To create a new problem, define two decorated functions in a Python file:
+- `@funsearch.evolve`: The target heuristic function for the LLM to improve.
+- `@funsearch.run`: The deterministic test runner returning a scalar fitness score (higher is better).
+
+Example (`my_problem.py`):
+```python
+import numpy as np
+
+@funsearch.evolve
+def priority(element: tuple[int, ...], n: int) -> float:
+  """Returns a numerical score for prioritizing `element`."""
+  return float(sum(element))
+
+@funsearch.run
+def evaluate(n: int) -> float:
+  """Evaluates the heuristic and returns an objective score."""
+  # Use priority(...) to construct a solution
+  score = ...
+  return float(score)
+```
+
+python -m funsearch.cli --problem my_problem.py --model gemini-3.7-flash
+```
+
+---
+
+## The Snakey Polyomino & Polyomino Achievement Games
+
+In Harary's generalized tic-tac-toe (Polyomino Achievement Game) featured by **Sophie MacLean on Numberphile**:
+- **Snakey (Step Snaky Hexomino)** is defined as a 4-in-a-row backbone with a 2-cell step head:
+  ```
+  Coordinates: [(0,0), (1,0), (2,0), (3,0), (3,1), (4,1)]
+
+                        [3, 1] [4, 1] (Head & Eye)
+  [0, 0] [1, 0] [2, 0] [3, 0]         (4-cell Body)
+  ```
+- **Symmetrical S-Hexomino (`snaky_s`)**:
+  ```
+  Coordinates: [(0,0), (1,0), (1,1), (1,2), (1,3), (2,3)]
+  ```
+
+### Running Certificate Generation & Soundness Verification
+
+You can generate and mathematically verify strategy certificates for polyomino achievement games:
+
+```bash
+# Solve & verify Domino (I2)
+python -m funsearch.problems.cert_solver --polyomino domino
+
+# Solve & verify 4-Straightomino (I4, 2,684 nodes verified in 0.1s)
+python -m funsearch.problems.cert_solver --polyomino i4 --radius 3 --depth 6
+
+# Solve & export certificate to JSON
+python -m funsearch.problems.cert_solver --polyomino i5 --output certificates/i5_cert.json
+
+# Run FunSearch evolutionary search on 5-Straightomino (I5)
+python -m funsearch.cli --problem straightomino --model gemini-3.7-flash --iterations 50
+
+# Run FunSearch evolutionary search on Snakey
+python -m funsearch.cli --problem snakey --model gemini-3.7-flash --iterations 50
+```
+
+---
+
+## Running Unit Tests
+
+Run the comprehensive test suite with:
+```bash
+.venv/bin/pytest -v
+```

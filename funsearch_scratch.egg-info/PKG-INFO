@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: funsearch-scratch
+Version: 0.2.0
+Summary: FunSearch: Mathematical Discoveries from Program Search with Large Language Models
+Author: DeepMind & Open-Source Contributors
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: google-genai>=2.0.0
+Requires-Dist: google-generativeai>=0.8.0
+Requires-Dist: openai>=1.0.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: scipy>=1.10.0
+Requires-Dist: absl-py>=2.0.0

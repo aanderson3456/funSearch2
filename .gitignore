@@ -1,0 +1,26 @@
+# Environments & Virtual Envs
+.venv/
+env/
+venv/
+ENV/
+
+# Secrets & Local Config
+.env
+.env.*
+*.key
+*.pem
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Experiment runs & logs
+outputs/
+*.log
+
+# OS artifacts
+.DS_Store
+.AppleDouble
+.LSOverride
