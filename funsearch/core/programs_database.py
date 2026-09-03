@@ -127,27 +127,41 @@ class Island:
     # Softmax sample clusters
     temp = max(self.temperature, 1e-6)
     probs = _softmax(cluster_scores, temp)
+    # Guarantee every cluster has a small non-zero probability to allow sampling without replacement
+    eps = 1e-6
+    probs = np.maximum(probs, eps)
+    probs = probs / np.sum(probs)
     
     num_to_sample = min(self._functions_per_prompt, len(signatures))
-    chosen_indices = np.random.choice(
-        len(signatures), size=num_to_sample, replace=False, p=probs
-    )
+    try:
+      chosen_indices = np.random.choice(
+          len(signatures), size=num_to_sample, replace=False, p=probs
+      )
+    except ValueError:
+      chosen_indices = np.random.choice(
+          len(signatures), size=num_to_sample, replace=True, p=probs
+      )
 
     chosen_programs: list[code_manipulation.Function] = []
+    chosen_scores: list[float] = []
     for idx in chosen_indices:
       sig = signatures[idx]
       cluster = self._clusters[sig]
       # Sample a program favoring shorter lengths
       lengths = np.array([len(p.body) for p in cluster.programs])
       len_probs = _softmax(-lengths, 1.0)
+      len_probs = np.maximum(len_probs, eps)
+      len_probs = len_probs / np.sum(len_probs)
       prog_idx = np.random.choice(len(cluster.programs), p=len_probs)
       chosen_programs.append(cluster.programs[prog_idx])
+      chosen_scores.append(cluster.score)
 
     # Sort chosen programs by score ascending
-    chosen_programs.sort(key=lambda p: self._clusters[_get_signature_from_prog(p, self._clusters)].score)
+    indices = np.argsort(chosen_scores)
+    sorted_programs = [chosen_programs[i] for i in indices]
 
-    version_generated = len(chosen_programs)
-    return self._build_prompt(chosen_programs, version_generated), version_generated
+    version_generated = len(sorted_programs)
+    return self._build_prompt(sorted_programs, version_generated), version_generated
 
   def _build_prompt(
       self,

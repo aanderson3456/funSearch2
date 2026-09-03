@@ -1,63 +1,4 @@
-import json
-import os
-from funsearch.problems import snakey_interactive
-from funsearch.interactive_evaluator import simulate_game
-
-def main():
-    print("Running simulation...")
-    # Capture trace
-    all_shapes = snakey_interactive._get_board_shapes(radius=6)
-    m_cells, b_cells = [], []
-    maker_won = False
-    
-    trace = []
-    
-    winning_shape = None
-    for turn in range(25):
-        m_set, b_set = set(m_cells), set(b_cells)
-        for s in all_shapes:
-            if s.issubset(m_set):
-                maker_won = True
-                winning_shape = list(s)
-                break
-        if maker_won:
-            break
-            
-        active = [s for s in all_shapes if not (s & b_set)]
-        if not active:
-            break
-            
-        candidates = set()
-        for s in active:
-            for p in s:
-                if p not in m_set and p not in b_set:
-                    candidates.add(p)
-        if not candidates:
-            break
-            
-        best_m_move = max(candidates, key=lambda c: snakey_interactive.maker_priority(c, m_cells, b_cells, active))
-        m_cells.append(best_m_move)
-        trace.append({'turn': turn + 1, 'player': 'maker', 'move': list(best_m_move)})
-        
-        m_set = set(m_cells)
-        active_for_breaker = [s for s in all_shapes if not (s & b_set)]
-        candidates_b = set()
-        for s in active_for_breaker:
-            for p in s:
-                if p not in m_set and p not in b_set:
-                    candidates_b.add(p)
-                    
-        if not candidates_b:
-            break
-            
-        b_move = max(candidates_b, key=lambda c: snakey_interactive.breaker_priority(c, m_cells, b_cells, active_for_breaker))
-        b_cells.append(b_move)
-        trace.append({'turn': turn + 1, 'player': 'breaker', 'move': list(b_move)})
-        
-    print(f"Simulation done. Traces: {len(trace)}")
-    
-    # Generate HTML
-    html_template = f"""<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -66,7 +7,7 @@ def main():
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&family=Inter:wght@400;600;800&display=swap');
     
-    :root {{
+    :root {
       --bg-color: #f8fafc;
       --card-bg: #ffffff;
       --text-primary: #1e293b;
@@ -76,8 +17,8 @@ def main():
       --accent-color: #8b5cf6;
       --grid-line: #cbd5e1;
       --grid-hover: #e2e8f0;
-    }}
-    body {{
+    }
+    body {
       font-family: 'Inter', sans-serif;
       background-color: var(--bg-color);
       color: var(--text-primary);
@@ -87,20 +28,20 @@ def main():
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-    }}
-    h1 {{
+    }
+    h1 {
       font-size: 2.5rem;
       font-weight: 800;
       background: linear-gradient(to right, var(--maker-color), var(--accent-color));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 0.5rem;
-    }}
-    .subtitle {{
+    }
+    .subtitle {
       color: var(--text-secondary);
       margin-bottom: 2rem;
-    }}
-    .game-container {{
+    }
+    .game-container {
       background-color: var(--card-bg);
       padding: 2rem;
       border-radius: 1rem;
@@ -111,77 +52,77 @@ def main():
       align-items: center;
       max-width: 800px;
       width: 100%;
-    }}
-    .controls {{
+    }
+    .controls {
       display: flex;
       gap: 1rem;
       margin-bottom: 2rem;
       width: 100%;
       justify-content: center;
-    }}
-    button {{
+    }
+    button {
       padding: 0.75rem 1.5rem;
       border-radius: 0.5rem;
       font-weight: 600;
       cursor: pointer;
       border: none;
       transition: all 0.2s;
-    }}
-    button.primary {{
+    }
+    button.primary {
       background-color: var(--accent-color);
       color: white;
-    }}
-    button.primary:hover {{
+    }
+    button.primary:hover {
       background-color: #7c3aed;
       transform: translateY(-1px);
-    }}
-    button:disabled {{
+    }
+    button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
-    }}
-    .status-card {{
+    }
+    .status-card {
       background-color: #0000000d;
       padding: 1rem 2rem;
       border-radius: 0.5rem;
       text-align: center;
       margin-bottom: 2rem;
       min-width: 200px;
-    }}
-    .status-label {{ font-size: 0.8rem; color: var(--text-secondary); }}
-    .status-value {{ font-size: 1.2rem; font-weight: 700; margin-top: 0.25rem; }}
-    .turn-maker {{ color: var(--maker-color); }}
-    .turn-breaker {{ color: var(--breaker-color); }}
+    }
+    .status-label { font-size: 0.8rem; color: var(--text-secondary); }
+    .status-value { font-size: 1.2rem; font-weight: 700; margin-top: 0.25rem; }
+    .turn-maker { color: var(--maker-color); }
+    .turn-breaker { color: var(--breaker-color); }
     
-    svg {{
+    svg {
       width: 100%;
       max-width: 600px;
       height: auto;
-    }}
-    .cell {{
+    }
+    .cell {
       stroke: var(--grid-line);
       stroke-width: 1;
       fill: transparent;
       transition: fill 0.3s;
-    }}
-    .maker-piece {{
+    }
+    .maker-piece {
       fill: var(--maker-color);
       filter: drop-shadow(0 0 10px var(--maker-color));
-    }}
-    .breaker-piece {{
+    }
+    .breaker-piece {
       fill: var(--breaker-color);
       filter: drop-shadow(0 0 10px var(--breaker-color));
-    }}
-    .winning-cell {{
+    }
+    .winning-cell {
       stroke: var(--accent-color) !important;
       stroke-width: 4 !important;
       filter: drop-shadow(0 0 15px var(--accent-color));
       animation: pulse 1s infinite alternate;
-    }}
-    @keyframes pulse {{
-      from {{ transform: scale(1); transform-origin: center; }}
-      to {{ transform: scale(1.05); transform-origin: center; }}
-    }}
-    .victory-banner {{
+    }
+    @keyframes pulse {
+      from { transform: scale(1); transform-origin: center; }
+      to { transform: scale(1.05); transform-origin: center; }
+    }
+    .victory-banner {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -194,21 +135,21 @@ def main():
       box-shadow: 0 20px 50px rgba(0,0,0,0.3);
       display: none;
       z-index: 100;
-    }}
-    .victory-banner h2 {{
+    }
+    .victory-banner h2 {
       margin: 0;
       font-size: 3rem;
       font-weight: 800;
       color: var(--accent-color);
       text-transform: uppercase;
-    }}
-    .grid-wrapper {{
+    }
+    .grid-wrapper {
       position: relative;
       width: 100%;
       max-width: 600px;
       display: flex;
       justify-content: center;
-    }}
+    }
   </style>
 </head>
 <body>
@@ -238,110 +179,99 @@ def main():
   </div>
 
   <script>
-    const trace = {json.dumps(trace)};
-    const winningShape = {json.dumps(winning_shape)};
+    const trace = [{"turn": 1, "player": "maker", "move": [2, 2]}, {"turn": 1, "player": "breaker", "move": [1, 2]}, {"turn": 2, "player": "maker", "move": [2, 1]}, {"turn": 2, "player": "breaker", "move": [2, 3]}, {"turn": 3, "player": "maker", "move": [3, 2]}, {"turn": 3, "player": "breaker", "move": [1, 1]}, {"turn": 4, "player": "maker", "move": [3, 3]}, {"turn": 4, "player": "breaker", "move": [3, 4]}, {"turn": 5, "player": "maker", "move": [4, 3]}, {"turn": 5, "player": "breaker", "move": [4, 4]}, {"turn": 6, "player": "maker", "move": [5, 1]}, {"turn": 6, "player": "breaker", "move": [6, 1]}, {"turn": 7, "player": "maker", "move": [4, 0]}, {"turn": 7, "player": "breaker", "move": [4, -1]}, {"turn": 8, "player": "maker", "move": [5, 0]}, {"turn": 8, "player": "breaker", "move": [4, 1]}, {"turn": 9, "player": "maker", "move": [5, 2]}, {"turn": 9, "player": "breaker", "move": [5, 3]}, {"turn": 10, "player": "maker", "move": [5, -1]}, {"turn": 10, "player": "breaker", "move": [4, 2]}, {"turn": 11, "player": "maker", "move": [5, -2]}, {"turn": 11, "player": "breaker", "move": [6, -2]}, {"turn": 12, "player": "maker", "move": [5, -3]}, {"turn": 12, "player": "breaker", "move": [4, -3]}, {"turn": 13, "player": "maker", "move": [5, -4]}, {"turn": 13, "player": "breaker", "move": [6, -4]}, {"turn": 14, "player": "maker", "move": [3, 0]}, {"turn": 14, "player": "breaker", "move": [2, 0]}, {"turn": 15, "player": "maker", "move": [6, 0]}, {"turn": 15, "player": "breaker", "move": [3, 1]}, {"turn": 16, "player": "maker", "move": [6, -1]}, {"turn": 16, "player": "breaker", "move": [4, -5]}];
+    const winningShape = [[5, -2], [5, -1], [6, -1], [5, -3], [6, 0], [5, -4]];
     let currentStep = 0;
     let autoInterval = null;
     
     // Draw Grid (13x13 grid, radius 6)
     const svg = document.getElementById('grid-svg');
     const cellSize = 50;
-    for (let x = -6; x <= 6; x++) {{
-      for (let y = -6; y <= 6; y++) {{
+    for (let x = -6; x <= 6; x++) {
+      for (let y = -6; y <= 6; y++) {
         const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         rect.setAttribute("x", (x + 6) * cellSize);
         rect.setAttribute("y", (y + 6) * cellSize);
         rect.setAttribute("width", cellSize);
         rect.setAttribute("height", cellSize);
         rect.setAttribute("class", "cell");
-        rect.setAttribute("id", `cell-${{x}}-${{y}}`);
+        rect.setAttribute("id", `cell-${x}-${y}`);
         svg.appendChild(rect);
-      }}
-    }}
+      }
+    }
     
-    function updateBoard() {{
+    function updateBoard() {
       // Reset all
-      document.querySelectorAll('.cell').forEach(el => {{
+      document.querySelectorAll('.cell').forEach(el => {
           el.setAttribute("class", "cell");
           el.style.transformOrigin = "center";
           el.style.transformBox = "fill-box";
-      }});
+      });
       document.getElementById('victory-banner').style.display = 'none';
       
       // Apply trace up to currentStep
-      for(let i=0; i<currentStep; i++) {{
+      for(let i=0; i<currentStep; i++) {
         const move = trace[i];
-        const cell = document.getElementById(`cell-${{move.move[0]}}-${{move.move[1]}}`);
-        if(cell) {{
-           cell.setAttribute("class", `cell ${{move.player}}-piece`);
-        }}
-      }}
+        const cell = document.getElementById(`cell-${move.move[0]}-${move.move[1]}`);
+        if(cell) {
+           cell.setAttribute("class", `cell ${move.player}-piece`);
+        }
+      }
       
       // Check for win
-      if (currentStep === trace.length && winningShape) {{
+      if (currentStep === trace.length && winningShape) {
           document.getElementById('victory-banner').style.display = 'block';
-          winningShape.forEach(p => {{
-              const c = document.getElementById(`cell-${{p[0]}}-${{p[1]}}`);
+          winningShape.forEach(p => {
+              const c = document.getElementById(`cell-${p[0]}-${p[1]}`);
               if(c) c.setAttribute("class", "cell maker-piece winning-cell");
-          }});
-      }}
+          });
+      }
       
       // Update UI
       document.getElementById('btn-prev').disabled = currentStep === 0;
       document.getElementById('btn-next').disabled = currentStep === trace.length;
       
       const statusDiv = document.getElementById('status-display');
-      if (currentStep === 0) {{
+      if (currentStep === 0) {
         statusDiv.innerText = "Start";
         statusDiv.className = "status-value";
-      }} else {{
+      } else {
         const lastMove = trace[currentStep-1];
-        statusDiv.innerText = `Turn ${{lastMove.turn}}: ${{lastMove.player.toUpperCase()}}`;
-        statusDiv.className = `status-value turn-${{lastMove.player}}`;
-      }}
+        statusDiv.innerText = `Turn ${lastMove.turn}: ${lastMove.player.toUpperCase()}`;
+        statusDiv.className = `status-value turn-${lastMove.player}`;
+      }
       
-      if (currentStep === trace.length && autoInterval) {{
+      if (currentStep === trace.length && autoInterval) {
           toggleAuto();
-      }}
-    }}
+      }
+    }
     
-    function step(delta) {{
+    function step(delta) {
       currentStep += delta;
       if (currentStep < 0) currentStep = 0;
       if (currentStep > trace.length) currentStep = trace.length;
       updateBoard();
-    }}
+    }
     
-    function toggleAuto() {{
+    function toggleAuto() {
         const btn = document.getElementById('btn-auto');
-        if (autoInterval) {{
+        if (autoInterval) {
             clearInterval(autoInterval);
             autoInterval = null;
             btn.innerText = "Autoplay";
             btn.style.backgroundColor = "var(--accent-color)";
-        }} else {{
-            if (currentStep === trace.length) {{
+        } else {
+            if (currentStep === trace.length) {
                 currentStep = 0;
                 updateBoard();
-            }}
+            }
             autoInterval = setInterval(() => step(1), 1000);
             btn.innerText = "Stop";
             btn.style.backgroundColor = "var(--breaker-color)";
-        }}
-    }}
+        }
+    }
     
     updateBoard();
   </script>
 </body>
 </html>
-"""
-    
-    from pathlib import Path
-    out_path = Path(os.environ.get("SNAKEY_REPLAY_HTML", "snakey_replay.html"))
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(out_path, 'w', encoding='utf-8') as f:
-        f.write(html_template)
-    print(f"Generated visualizer at: {out_path.resolve()}")
-
-if __name__ == '__main__':
-    main()

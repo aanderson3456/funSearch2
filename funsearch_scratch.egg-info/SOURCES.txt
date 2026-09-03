@@ -1,7 +1,10 @@
+README.md
 pyproject.toml
 funsearch/__init__.py
 funsearch/cli.py
 funsearch/engine.py
+funsearch/generate_visualizer.py
+funsearch/interactive_evaluator.py
 funsearch/core/__init__.py
 funsearch/core/code_manipulation.py
 funsearch/core/config.py
@@ -15,6 +18,14 @@ funsearch/problems/__init__.py
 funsearch/problems/admissible_set.py
 funsearch/problems/bin_packing.py
 funsearch/problems/cap_set.py
+funsearch/problems/cert_solver.py
+funsearch/problems/cert_verifier.py
+funsearch/problems/cert_visualizer.py
+funsearch/problems/snakey.py
+funsearch/problems/snakey_breaker.py
+funsearch/problems/snakey_interactive.py
+funsearch/problems/snakey_lean_transpiler.py
+funsearch/problems/straightomino.py
 funsearch/sandbox/__init__.py
 funsearch/sandbox/base.py
 funsearch/sandbox/process_sandbox.py
@@ -31,3 +42,5 @@ tests/test_code_manipulation.py
 tests/test_engine.py
 tests/test_programs_database.py
 tests/test_sandbox.py
+tests/test_snakey.py
+tests/test_straightomino.py
