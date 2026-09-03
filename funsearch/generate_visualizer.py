@@ -3,8 +3,18 @@ import os
 from funsearch.problems import snakey_interactive
 from funsearch.interactive_evaluator import simulate_game
 
+def load_func(filepath, func_name):
+    with open(filepath, 'r') as f:
+        code = f.read()
+    namespace = {}
+    exec(code, namespace)
+    return namespace[func_name]
+
 def main():
     print("Running simulation...")
+    maker_func = load_func("outputs/snakey_1788406504/best_program.py", "priority")
+    breaker_func = load_func("outputs/snakey_breaker_1788405958/best_program.py", "breaker_priority")
+    
     # Capture trace
     all_shapes = snakey_interactive._get_board_shapes(radius=6)
     m_cells, b_cells = [], []
@@ -35,7 +45,7 @@ def main():
         if not candidates:
             break
             
-        best_m_move = max(candidates, key=lambda c: snakey_interactive.maker_priority(c, m_cells, b_cells, active))
+        best_m_move = max(candidates, key=lambda c: maker_func(c, m_cells, b_cells, active))
         m_cells.append(best_m_move)
         trace.append({'turn': turn + 1, 'player': 'maker', 'move': list(best_m_move)})
         
@@ -50,11 +60,11 @@ def main():
         if not candidates_b:
             break
             
-        b_move = max(candidates_b, key=lambda c: snakey_interactive.breaker_priority(c, m_cells, b_cells, active_for_breaker))
+        b_move = max(candidates_b, key=lambda c: breaker_func(c, m_cells, b_cells, active_for_breaker))
         b_cells.append(b_move)
         trace.append({'turn': turn + 1, 'player': 'breaker', 'move': list(b_move)})
         
-    print(f"Simulation done. Traces: {len(trace)}")
+    print(f"Simulation done. Maker won: {maker_won}. Turns: {len(m_cells)}. Traces: {len(trace)}")
     
     # Generate HTML
     html_template = f"""<!DOCTYPE html>

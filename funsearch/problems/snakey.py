@@ -52,18 +52,17 @@ def priority(
   """
   m_set = set(maker_cells)
   b_set = set(breaker_cells)
+  weights = {0: 1.0, 1: 4.1, 2: 26.9, 3: 507.8, 4: 25000.0, 5: 1000000.0}
   score = 0.0
-
+  active_count = 0
   for shape in active_shapes:
     if candidate in shape:
-      # Count how many cells Maker already owns in this shape
-      m_count = sum(1 for p in shape if p in m_set)
-      # Exponential weighting for advancing close-to-completion shapes
-      score += float(10 ** m_count)
-      
-  # Center proximity bias (prefer compact central development)
-  score -= (abs(candidate[0]) + abs(candidate[1])) * 0.1
-  return score
+      m_cnt = sum(1 for p in shape if p in m_set)
+      score += weights.get(m_cnt, 10.0 ** m_cnt)
+      active_count += 1
+  score += (active_count ** 1.3) * 2.97
+  score -= (abs(candidate[0]) + abs(candidate[1])) * 0.08
+  return float(score)
 
 
 @funsearch.run
@@ -89,33 +88,21 @@ def evaluate(grid_radius: int) -> float:
     if not candidates:
         return (999, 999)
         
-    best_move = None
-    best_score = -float('inf')
-    
-    for cand in candidates:
+    def breaker_priority(candidate, maker_cells, breaker_cells, active_shapes):
+        m_set = set(maker_cells)
+        b_set = set(breaker_cells)
+        block_weights = {0: 1.0, 1: 9.2, 2: 74.4, 3: 285.2, 4: 90000.0, 5: 1e8}
         score = 0.0
-        high_threat_shapes = 0
-        for shape in active:
-            if cand in shape:
-                m_count = sum(1 for p in shape if p in m_set)
-                if m_count == len(shape) - 1:
-                    return cand  # Must block 1-threats instantly
-                if m_count >= 3:
-                    high_threat_shapes += 1
-                score += float(10 ** m_count)
-        
-        # Anti-Decoy Fork Destruction
-        if high_threat_shapes > 1:
-            score += 50000.0
-            
-        center_bonus = 10.0 - (abs(cand[0]) + abs(cand[1]))
-        score += center_bonus
-        
-        if score > best_score:
-            best_score = score
-            best_move = cand
-            
-    return best_move
+        overlap = 0
+        for shape in active_shapes:
+            if candidate in shape:
+                m_cnt = sum(1 for p in shape if p in m_set)
+                score += block_weights.get(m_cnt, 10.0 ** m_cnt)
+                overlap += 1
+        score += (overlap ** 1.5) * 4.62
+        return float(score)
+
+    return max(candidates, key=lambda c: breaker_priority(c, m_cells, b_cells, active))
 
   # Run simulations against the Evolving Breaker
   for breaker_fn in [evolving_breaker]:

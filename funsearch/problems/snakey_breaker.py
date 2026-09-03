@@ -80,30 +80,22 @@ def evaluate(grid_radius: int) -> float:
     if not candidates:
         return (999, 999)
         
-    best_move = None
-    best_score = -float('inf')
-    
-    weight_map = {0: 1.0, 1: 5.0, 2: 35.0, 3: 350.0, 4: 50000.0, 5: 100000000.0}
-    
-    for cand in candidates:
-      score = 0.0
-      active_count = 0
-      for shape in active:
-        if cand in shape:
-          if any(p in b_set for p in shape):
-            continue
-          m_count = sum(1 for p in shape if p in m_set)
-          score += weight_map.get(m_count, 10.0 ** m_count)
-          active_count += 1
-          
-      score += (active_count ** 1.5) * 2.0
-      score -= (cand[0] ** 2 + cand[1] ** 2) * 0.01
-      
-      if score > best_score:
-        best_score = score
-        best_move = cand
-        
-    return best_move
+    def priority(candidate, maker_cells, breaker_cells, active_shapes):
+        m_set = set(maker_cells)
+        b_set = set(breaker_cells)
+        weights = {0: 1.0, 1: 4.1, 2: 26.9, 3: 507.8, 4: 25000.0, 5: 1000000.0}
+        score = 0.0
+        active_count = 0
+        for shape in active_shapes:
+            if candidate in shape:
+                m_cnt = sum(1 for p in shape if p in m_set)
+                score += weights.get(m_cnt, 10.0 ** m_cnt)
+                active_count += 1
+        score += (active_count ** 1.3) * 2.97
+        score -= (abs(candidate[0]) + abs(candidate[1])) * 0.08
+        return float(score)
+
+    return max(candidates, key=lambda c: priority(c, m_cells, b_cells, active))
 
   # Run simulations against the Elite Maker
   m_cells, b_cells = [], []

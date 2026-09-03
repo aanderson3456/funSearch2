@@ -24,3 +24,6 @@ outputs/
 .DS_Store
 .AppleDouble
 .LSOverride
+
+# PyTorch Models
+*.pt
