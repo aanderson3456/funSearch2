@@ -13,6 +13,7 @@ Maker seeks to construct any D8 isometric copy of the 6-cell Snakey Hexomino:
 
 | Rank | File | Score | Strategy Profile |
 | :--- | :--- | :--- | :--- |
+| 0 | `rank_0_score_300.00.py` | 300.00 | Upgraded multi-level exponential weight map (w4: 25000, w5: 1e6) and high-density scaling (`**1.3 * 1.58`) |
 | 1 | `rank_1_score_280.00.py` | 280.00 | Multi-level exponential weight map, active shape density scaling (`**1.3`), Manhattan distance penalty |
 | 2 | `rank_2_score_270.00.py` | 270.00 | Aggressive fork acceleration with calibrated threat-3 branching |
 | 3 | `rank_3_score_270.00.py` | 270.00 | Heavy center-mass development with high density multiplier |
