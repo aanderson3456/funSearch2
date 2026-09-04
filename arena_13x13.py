@@ -74,6 +74,7 @@ def play_match(maker_strat, breaker_strat):
     winning_shape = None
     
     for turn in range(85): # Max ~84 moves per player on 13x13
+        print(f"\rMatch turn {turn+1}...", end="", flush=True)
         m_set, b_set = set(m_cells), set(b_cells)
         
         for s in ALL_SHAPES_13X13:
