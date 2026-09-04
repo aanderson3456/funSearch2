@@ -120,10 +120,22 @@ def play_match(maker_strat, breaker_strat):
     return maker_won, len(m_cells), trace, winning_shape
 
 if __name__ == "__main__":
-    device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+    import glob
+    import re
+    device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
     print("Loading 13x13 Massive Neural Network...")
+    
+    model_files = glob.glob("snaky_large_model_it*.pt")
+    if not model_files:
+        model_files = glob.glob("*.pt")
+    if not model_files:
+        raise FileNotFoundError("No .pt model files found in the current directory.")
+        
+    latest_model = max(model_files, key=lambda f: int(m.group(1)) if (m := re.search(r'it(\d+)', f)) else -1)
+    print(f"Loading model from {latest_model}...")
+    
     model = SnakyNet(num_resBlocks=16, num_channels=256, board_size=13).to(device)
-    model.load_state_dict(torch.load("/Users/austinanderson/GitHub/FunSizzy/FS2/snaky_large_model_it12.pt", map_location=device, weights_only=True))
+    model.load_state_dict(torch.load(latest_model, map_location=device, weights_only=True))
     model.eval()
     
     print("Playing Match 1: Maker (Top Evolved Heuristic) vs Breaker (Massive NN Policy)")
