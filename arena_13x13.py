@@ -5,6 +5,8 @@ import json
 
 sys.path.append("/Users/austinanderson/GitHub/FunSizzy/FS2/big_nn")
 from resnet import SnakyNet
+from mcts import MCTS
+from env import SnakyEnv
 
 # 13x13 Board shapes helper (radius=6)
 _BASE_SNAKY = [(0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (4, 1)]
@@ -44,26 +46,25 @@ maker_namespace = {}
 exec(maker_src, maker_namespace)
 evolved_maker_priority = maker_namespace["priority"]
 
+mcts_cache = {}
+
 # --- Neural Network Strategy Wrapper ---
 def neural_net_priority(candidate, maker_cells, breaker_cells, active_shapes, role, model, device):
-    state = np.zeros((3, 13, 13), dtype=np.float32)
-    for (x, y) in maker_cells:
-        state[0, y+6, x+6] = 1.0
-    for (x, y) in breaker_cells:
-        state[1, y+6, x+6] = 1.0
+    state_key = (frozenset(maker_cells), frozenset(breaker_cells), role)
+    if state_key not in mcts_cache:
+        env = SnakyEnv(size=13)
+        for x, y in maker_cells:
+            env.maker_board |= (1 << ((y+6) * 13 + (x+6)))
+        for x, y in breaker_cells:
+            env.breaker_board |= (1 << ((y+6) * 13 + (x+6)))
+        env.current_player = role
         
-    if role == 1:
-        state[2, :, :] = 1.0
-    else:
-        state[2, :, :] = 0.0
+        mcts = MCTS(model, num_searches=400, device=device)
+        mcts_cache[state_key] = mcts.search(env, add_noise=False)
         
-    state_tensor = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
-    with torch.no_grad():
-        policy_logits, _ = model(state_tensor)
-        policy = torch.nn.functional.softmax(policy_logits, dim=1).squeeze(0).cpu().numpy()
-        
+    action_probs = mcts_cache[state_key]
     idx = (candidate[1]+6) * 13 + (candidate[0]+6)
-    return float(policy[idx])
+    return float(action_probs[idx])
 
 def play_match(maker_strat, breaker_strat):
     m_cells, b_cells = [], []
@@ -122,15 +123,34 @@ if __name__ == "__main__":
     device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
     print("Loading 13x13 Massive Neural Network...")
     model = SnakyNet(num_resBlocks=16, num_channels=256, board_size=13).to(device)
-    model.load_state_dict(torch.load("/Users/austinanderson/GitHub/FunSizzy/FS2/snaky_large_model_it2.pt", map_location=device, weights_only=True))
+    model.load_state_dict(torch.load("/Users/austinanderson/GitHub/FunSizzy/FS2/snaky_large_model_it12.pt", map_location=device, weights_only=True))
     model.eval()
     
-    print("Playing Match: Maker (Top Evolved Heuristic) vs Breaker (Massive NN Policy)")
+    print("Playing Match 1: Maker (Top Evolved Heuristic) vs Breaker (Massive NN Policy)")
     maker_strat = lambda c, m, b, a: evolved_maker_priority(c, m, b, a)
     breaker_strat = lambda c, m, b, a: neural_net_priority(c, m, b, a, -1, model, device)
     
     m_won, turns, t, w = play_match(maker_strat, breaker_strat)
-    print(f"Result: {'Maker (Heuristic)' if m_won else 'Breaker (NN)'} won in {turns} turns.")
+    print(f"Match 1 Result: {'Maker (Heuristic)' if m_won else 'Breaker (NN)'} won in {turns} turns.")
     
     with open("arena_13x13_trace.json", "w") as f:
         json.dump({"trace": t, "winningShape": w}, f)
+
+    # --- Load Evolved FunSearch Breaker ---
+    with open("co_evolve_champions/breaker_top_1_score_276.py", "r") as f:
+        breaker_src = f.read()
+    lines_b = [l for l in breaker_src.split("\n") if not l.startswith("#")]
+    breaker_src = "\n".join(lines_b)
+    breaker_namespace = {}
+    exec(breaker_src, breaker_namespace)
+    evolved_breaker_priority = breaker_namespace["breaker_priority"]
+        
+    print("\nPlaying Match 2: Maker (Massive NN Policy) vs Breaker (Top Evolved Heuristic)")
+    maker_strat_2 = lambda c, m, b, a: neural_net_priority(c, m, b, a, 1, model, device)
+    breaker_strat_2 = lambda c, m, b, a: evolved_breaker_priority(c, m, b, a)
+    
+    m_won2, turns2, t2, w2 = play_match(maker_strat_2, breaker_strat_2)
+    print(f"Match 2 Result: {'Maker (NN)' if m_won2 else 'Breaker (Heuristic)'} won in {turns2} turns.")
+    
+    with open("arena_13x13_trace_2.json", "w") as f:
+        json.dump({"trace": t2, "winningShape": w2}, f)

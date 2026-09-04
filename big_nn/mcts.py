@@ -45,7 +45,7 @@ class MCTS:
             
         return torch.tensor(state, dtype=torch.float32, device=self.device).unsqueeze(0)
 
-    def search(self, initial_env):
+    def search(self, initial_env, add_noise=False):
         root = Node()
         
         # Expand root
@@ -71,11 +71,12 @@ class MCTS:
             root.children[move] = Node(parent=root, prior_prob=valid_policy[move])
 
         # Add Dirichlet noise for exploration at root
-        dirichlet_alpha = 0.3
-        dirichlet_noise = np.random.dirichlet([dirichlet_alpha] * len(legal_moves))
-        frac = 0.25
-        for i, move in enumerate(legal_moves):
-            root.children[move].prior_prob = (1 - frac) * root.children[move].prior_prob + frac * dirichlet_noise[i]
+        if add_noise:
+            dirichlet_alpha = 0.3
+            dirichlet_noise = np.random.dirichlet([dirichlet_alpha] * len(legal_moves))
+            frac = 0.25
+            for i, move in enumerate(legal_moves):
+                root.children[move].prior_prob = (1 - frac) * root.children[move].prior_prob + frac * dirichlet_noise[i]
 
         for _ in range(self.num_searches):
             node = root
