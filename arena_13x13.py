@@ -3,7 +3,8 @@ import torch
 import numpy as np
 import json
 
-sys.path.append("/Users/austinanderson/GitHub/FunSizzy/FS2/big_nn")
+import os
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "big_nn"))
 from resnet import SnakyNet
 from mcts import MCTS
 from env import SnakyEnv
