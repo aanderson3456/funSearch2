@@ -106,5 +106,6 @@ def make_html(trace_file, out_file, title):
     with open(out_file, "w") as f:
         f.write(html)
 
-make_html("arena_13x13_trace.json", "/Users/austinanderson/.gemini/antigravity-ide/brain/d9ec732f-a244-46f8-bdd2-8ca591c21668/arena_match_1_replay.html", "Match 1: Heuristic Maker vs NN Breaker")
-make_html("arena_13x13_trace_2.json", "/Users/austinanderson/.gemini/antigravity-ide/brain/d9ec732f-a244-46f8-bdd2-8ca591c21668/arena_match_2_replay.html", "Match 2: NN Maker vs Heuristic Breaker")
+make_html("arena_13x13_trace.json", "arena_match_1_replay.html", "Match 1: Heuristic Maker vs NN Breaker")
+make_html("arena_13x13_trace_2.json", "arena_match_2_replay.html", "Match 2: NN Maker vs Heuristic Breaker")
+make_html("arena_13x13_trace_3.json", "arena_match_3_replay.html", "Match 3: NN Maker vs NN Breaker")

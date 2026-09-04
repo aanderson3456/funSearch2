@@ -1,0 +1,97 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Match 2: NN Maker vs Heuristic Breaker</title>
+        <style>
+            body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background-color: #1a1a1a; color: white; }
+            #board { display: grid; grid-template-columns: repeat(13, 30px); gap: 2px; margin-top: 20px; padding: 10px; background-color: #333; border-radius: 8px; }
+            .cell { width: 30px; height: 30px; background-color: #444; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: background-color 0.3s; }
+            .maker { background-color: #3b82f6; }
+            .breaker { background-color: #ef4444; }
+            .winning { background-color: #22c55e !important; box-shadow: 0 0 10px #22c55e; z-index: 10; }
+            #controls { margin-top: 20px; display: flex; gap: 10px; align-items: center; }
+            button { padding: 8px 16px; background-color: #4f46e5; color: white; border: none; border-radius: 4px; cursor: pointer; }
+            button:hover { background-color: #4338ca; }
+            #turn-info { font-size: 1.2rem; margin-top: 20px; }
+        </style>
+    </head>
+    <body>
+        <h2>Match 2: NN Maker vs Heuristic Breaker</h2>
+        <div id="turn-info">Turn: 0</div>
+        <div id="board"></div>
+        <div id="controls">
+            <button onclick="prevTurn()">Previous</button>
+            <button onclick="togglePlay()" id="playBtn">Play</button>
+            <button onclick="nextTurn()">Next</button>
+        </div>
+
+        <script>
+            const trace = [{"turn": 1, "player": "maker", "move": [6, 6]}, {"turn": 1, "player": "breaker", "move": [2, 2]}, {"turn": 2, "player": "maker", "move": [6, -6]}, {"turn": 2, "player": "breaker", "move": [-1, -2]}, {"turn": 3, "player": "maker", "move": [-6, -6]}, {"turn": 3, "player": "breaker", "move": [-2, 2]}, {"turn": 4, "player": "maker", "move": [-6, 6]}, {"turn": 4, "player": "breaker", "move": [0, 0]}, {"turn": 5, "player": "maker", "move": [5, 6]}, {"turn": 5, "player": "breaker", "move": [2, -2]}, {"turn": 6, "player": "maker", "move": [4, 6]}, {"turn": 6, "player": "breaker", "move": [2, 5]}, {"turn": 7, "player": "maker", "move": [2, 6]}, {"turn": 7, "player": "breaker", "move": [5, 5]}, {"turn": 8, "player": "maker", "move": [0, 6]}, {"turn": 8, "player": "breaker", "move": [4, 0]}, {"turn": 9, "player": "maker", "move": [0, 5]}, {"turn": 9, "player": "breaker", "move": [1, 6]}, {"turn": 10, "player": "maker", "move": [3, 6]}, {"turn": 10, "player": "breaker", "move": [0, 4]}, {"turn": 11, "player": "maker", "move": [-6, 5]}, {"turn": 11, "player": "breaker", "move": [-4, 0]}, {"turn": 12, "player": "maker", "move": [6, 4]}, {"turn": 12, "player": "breaker", "move": [-2, -3]}, {"turn": 13, "player": "maker", "move": [-6, 4]}, {"turn": 13, "player": "breaker", "move": [-5, 2]}, {"turn": 14, "player": "maker", "move": [1, 5]}, {"turn": 14, "player": "breaker", "move": [-3, 6]}, {"turn": 15, "player": "maker", "move": [3, 5]}, {"turn": 15, "player": "breaker", "move": [1, 3]}, {"turn": 16, "player": "maker", "move": [4, 5]}, {"turn": 16, "player": "breaker", "move": [4, 3]}, {"turn": 17, "player": "maker", "move": [6, 5]}, {"turn": 17, "player": "breaker", "move": [5, 2]}, {"turn": 18, "player": "maker", "move": [-1, 5]}, {"turn": 18, "player": "breaker", "move": [-2, 5]}, {"turn": 19, "player": "maker", "move": [-3, 5]}, {"turn": 19, "player": "breaker", "move": [-1, 4]}, {"turn": 20, "player": "maker", "move": [-4, 5]}, {"turn": 20, "player": "breaker", "move": [-3, 4]}, {"turn": 21, "player": "maker", "move": [-5, 5]}, {"turn": 21, "player": "breaker", "move": [3, 4]}, {"turn": 22, "player": "maker", "move": [5, 4]}, {"turn": 22, "player": "breaker", "move": [-6, 2]}, {"turn": 23, "player": "maker", "move": [-5, -6]}, {"turn": 23, "player": "breaker", "move": [-3, -5]}, {"turn": 24, "player": "maker", "move": [-4, -6]}, {"turn": 24, "player": "breaker", "move": [2, -5]}, {"turn": 25, "player": "maker", "move": [-3, -6]}, {"turn": 25, "player": "breaker", "move": [-2, -6]}, {"turn": 26, "player": "maker", "move": [-1, -6]}, {"turn": 26, "player": "breaker", "move": [5, -2]}, {"turn": 27, "player": "maker", "move": [0, -6]}, {"turn": 27, "player": "breaker", "move": [-5, -2]}, {"turn": 28, "player": "maker", "move": [1, -6]}, {"turn": 28, "player": "breaker", "move": [2, -6]}, {"turn": 29, "player": "maker", "move": [3, -6]}, {"turn": 29, "player": "breaker", "move": [0, -3]}, {"turn": 30, "player": "maker", "move": [4, -6]}, {"turn": 30, "player": "breaker", "move": [4, -3]}, {"turn": 31, "player": "maker", "move": [5, -6]}, {"turn": 31, "player": "breaker", "move": [-4, 3]}, {"turn": 32, "player": "maker", "move": [-6, -5]}, {"turn": 32, "player": "breaker", "move": [-4, -4]}, {"turn": 33, "player": "maker", "move": [-5, -5]}, {"turn": 33, "player": "breaker", "move": [-6, -3]}, {"turn": 34, "player": "maker", "move": [-5, -3]}, {"turn": 34, "player": "breaker", "move": [-4, -2]}, {"turn": 35, "player": "maker", "move": [5, 1]}, {"turn": 35, "player": "breaker", "move": [2, 0]}, {"turn": 36, "player": "maker", "move": [-6, 1]}, {"turn": 36, "player": "breaker", "move": [-2, 0]}, {"turn": 37, "player": "maker", "move": [0, -4]}, {"turn": 37, "player": "breaker", "move": [1, -4]}, {"turn": 38, "player": "maker", "move": [6, 2]}, {"turn": 38, "player": "breaker", "move": [5, 0]}, {"turn": 39, "player": "maker", "move": [-5, -1]}, {"turn": 39, "player": "breaker", "move": [3, -4]}, {"turn": 40, "player": "maker", "move": [3, -2]}, {"turn": 40, "player": "breaker", "move": [3, -1]}, {"turn": 41, "player": "maker", "move": [5, -5]}, {"turn": 41, "player": "breaker", "move": [6, -2]}, {"turn": 42, "player": "maker", "move": [-5, 0]}, {"turn": 42, "player": "breaker", "move": [-3, -1]}, {"turn": 43, "player": "maker", "move": [3, 1]}, {"turn": 43, "player": "breaker", "move": [0, 2]}, {"turn": 44, "player": "maker", "move": [-3, -3]}, {"turn": 44, "player": "breaker", "move": [-3, -4]}, {"turn": 45, "player": "maker", "move": [-3, 0]}, {"turn": 45, "player": "breaker", "move": [5, 3]}, {"turn": 46, "player": "maker", "move": [-3, -2]}, {"turn": 46, "player": "breaker", "move": [-3, 1]}, {"turn": 47, "player": "maker", "move": [3, 2]}, {"turn": 47, "player": "breaker", "move": [1, 1]}, {"turn": 48, "player": "maker", "move": [-3, 3]}, {"turn": 48, "player": "breaker", "move": [3, 0]}, {"turn": 49, "player": "maker", "move": [1, -3]}, {"turn": 49, "player": "breaker", "move": [1, -1]}, {"turn": 50, "player": "maker", "move": [-1, -1]}, {"turn": 50, "player": "breaker", "move": [-1, 1]}, {"turn": 51, "player": "maker", "move": [0, 3]}, {"turn": 51, "player": "breaker", "move": [-3, 2]}];
+            const winningShape = null;
+            let currentTurn = 0;
+            let isPlaying = false;
+            let playInterval;
+
+            const board = document.getElementById('board');
+            for(let y=-6; y<=6; y++) {
+                for(let x=-6; x<=6; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.id = `cell-${x}-${y}`;
+                    board.appendChild(cell);
+                }
+            }
+
+            function updateBoard() {
+                document.querySelectorAll('.cell').forEach(c => c.className = 'cell');
+                for(let i=0; i<currentTurn; i++) {
+                    const move = trace[i];
+                    const cell = document.getElementById(`cell-${move.move[0]}-${move.move[1]}`);
+                    if(cell) {
+                        cell.classList.add(move.player);
+                        cell.textContent = i+1;
+                    }
+                }
+                
+                if(currentTurn === trace.length && winningShape) {
+                    winningShape.forEach(p => {
+                        const cell = document.getElementById(`cell-${p[0]}-${p[1]}`);
+                        if(cell) cell.classList.add('winning');
+                    });
+                }
+                document.getElementById('turn-info').textContent = `Turn: ${currentTurn} / ${trace.length}`;
+            }
+
+            function nextTurn() {
+                if(currentTurn < trace.length) { currentTurn++; updateBoard(); }
+                else pause();
+            }
+
+            function prevTurn() {
+                if(currentTurn > 0) { currentTurn--; updateBoard(); }
+            }
+
+            function togglePlay() {
+                if(isPlaying) pause();
+                else play();
+            }
+
+            function play() {
+                isPlaying = true;
+                document.getElementById('playBtn').textContent = 'Pause';
+                if(currentTurn === trace.length) currentTurn = 0;
+                playInterval = setInterval(nextTurn, 500);
+            }
+
+            function pause() {
+                isPlaying = false;
+                document.getElementById('playBtn').textContent = 'Play';
+                clearInterval(playInterval);
+            }
+            
+            updateBoard();
+        </script>
+    </body>
+    </html>
+    

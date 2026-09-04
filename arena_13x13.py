@@ -140,31 +140,12 @@ if __name__ == "__main__":
     model.load_state_dict(torch.load(latest_model, map_location=device, weights_only=True))
     model.eval()
     
-    print("Playing Match 1: Maker (Top Evolved Heuristic) vs Breaker (Massive NN Policy)")
-    maker_strat = lambda c, m, b, a: evolved_maker_priority(c, m, b, a)
-    breaker_strat = lambda c, m, b, a: neural_net_priority(c, m, b, a, -1, model, device)
+    print("\nPlaying Match 3: Maker (Massive NN Policy) vs Breaker (Massive NN Policy)")
+    maker_strat_3 = lambda c, m, b, a: neural_net_priority(c, m, b, a, 1, model, device)
+    breaker_strat_3 = lambda c, m, b, a: neural_net_priority(c, m, b, a, -1, model, device)
     
-    m_won, turns, t, w = play_match(maker_strat, breaker_strat)
-    print(f"Match 1 Result: {'Maker (Heuristic)' if m_won else 'Breaker (NN)'} won in {turns} turns.")
+    m_won3, turns3, t3, w3 = play_match(maker_strat_3, breaker_strat_3)
+    print(f"Match 3 Result: {'Maker (NN)' if m_won3 else 'Breaker (NN)'} won in {turns3} turns.")
     
-    with open("arena_13x13_trace.json", "w") as f:
-        json.dump({"trace": t, "winningShape": w}, f)
-
-    # --- Load Evolved FunSearch Breaker ---
-    with open("co_evolve_champions/breaker_top_1_score_276.py", "r") as f:
-        breaker_src = f.read()
-    lines_b = [l for l in breaker_src.split("\n") if not l.startswith("#")]
-    breaker_src = "\n".join(lines_b)
-    breaker_namespace = {}
-    exec(breaker_src, breaker_namespace)
-    evolved_breaker_priority = breaker_namespace["breaker_priority"]
-        
-    print("\nPlaying Match 2: Maker (Massive NN Policy) vs Breaker (Top Evolved Heuristic)")
-    maker_strat_2 = lambda c, m, b, a: neural_net_priority(c, m, b, a, 1, model, device)
-    breaker_strat_2 = lambda c, m, b, a: evolved_breaker_priority(c, m, b, a)
-    
-    m_won2, turns2, t2, w2 = play_match(maker_strat_2, breaker_strat_2)
-    print(f"Match 2 Result: {'Maker (NN)' if m_won2 else 'Breaker (Heuristic)'} won in {turns2} turns.")
-    
-    with open("arena_13x13_trace_2.json", "w") as f:
-        json.dump({"trace": t2, "winningShape": w2}, f)
+    with open("arena_13x13_trace_3.json", "w") as f:
+        json.dump({"trace": t3, "winningShape": w3}, f)
