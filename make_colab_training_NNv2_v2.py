@@ -20,7 +20,7 @@ notebook = {
                 "from google.colab import drive\n",
                 "drive.mount('/content/drive')\n",
                 "import os\n",
-                "os.makedirs('/content/drive/MyDrive/SnakyNet_Checkpoints', exist_ok=True)"
+                "os.makedirs('/content/drive/MyDrive/SnakyNet_v2_Checkpoints', exist_ok=True)"
             ]
         },
         {
@@ -396,7 +396,7 @@ notebook = {
                 "buffer = ReplayBuffer(capacity=100000)\n",
                 "\n",
                 "import re\n",
-                "drive_models = glob.glob(\"/content/drive/MyDrive/SnakyNet_Checkpoints/snaky_large_model_it*.pt\")\n",
+                "drive_models = glob.glob(\"/content/drive/MyDrive/SnakyNet_v2_Checkpoints/snaky_large_model_it*.pt\")\n",
                 "root_models = glob.glob(\"/content/drive/MyDrive/snaky_large_model_it*.pt\")\n",
                 "all_models = drive_models + root_models\n",
                 "\n",
@@ -424,7 +424,7 @@ notebook = {
                 "\n",
                 "import json\n",
                 "import os\n",
-                "loss_history_path = '/content/drive/MyDrive/SnakyNet_Checkpoints/loss_history.json'\n",
+                "loss_history_path = '/content/drive/MyDrive/SnakyNet_v2_Checkpoints/loss_history.json'\n",
                 "loss_history = []\n",
                 "if os.path.exists(loss_history_path):\n",
                 "    with open(loss_history_path, 'r') as f:\n",
@@ -455,7 +455,7 @@ notebook = {
                 "            json.dump(loss_history, f)\n",
                 "        \n",
                 "    # Always save properly as state_dict so it loads anywhere!\n",
-                "    save_path = f'/content/drive/MyDrive/SnakyNet_Checkpoints/snaky_large_model_it{it}.pt'\n",
+                "    save_path = f'/content/drive/MyDrive/SnakyNet_v2_Checkpoints/snaky_large_model_it{it}.pt'\n",
                 "    torch.save(model.state_dict(), save_path)\n",
                 "    print(f'Saved Checkpoint to Google Drive! ({save_path})')\n"
             ]
@@ -476,6 +476,6 @@ notebook = {
     "nbformat_minor": 0
 }
 
-with open("colab_training_NNv2_v1.ipynb", "w") as f:
+with open("colab_training_NNv2_v2.ipynb", "w") as f:
     json.dump(notebook, f, indent=2)
-print("colab_training_NNv2_v1.ipynb generated!")
+print("colab_training_NNv2_v2.ipynb generated!")
