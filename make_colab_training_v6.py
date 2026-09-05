@@ -458,6 +458,6 @@ notebook = {
     "nbformat_minor": 0
 }
 
-with open("colab_training_v5.ipynb", "w") as f:
+with open("colab_training_v6.ipynb", "w") as f:
     json.dump(notebook, f, indent=2)
-print("colab_training_v5.ipynb generated!")
+print("colab_training_v6.ipynb generated!")
