@@ -1,19 +1,13 @@
-"""Snakey Breaker Evolution Game specification for FunSearch.
-
-Maker uses the hardcoded elite 280-point strategy. 
-Breaker is evolved by FunSearch to defeat Maker.
-"""
+"""Specification."""
 from __future__ import annotations
 
 SPECIFICATION = '''"""Snakey Breaker Evolution Game problem specification."""
 import itertools
 import numpy as np
 
-# Base coordinates of Snakey Hexomino (4-in-a-row bar + 2-cell step head)
 _BASE_SNAKY = [(0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (4, 1)]
 
 def _get_board_shapes(radius: int = 4):
-  """Generates all translational instances of Snaky in D8 within [-radius, radius]^2."""
   orientations = set()
   for rot in range(4):
     for ref in range(2):
@@ -36,7 +30,6 @@ def _get_board_shapes(radius: int = 4):
           shapes.append(frozenset(translated))
   return list(set(shapes))
 
-
 @funsearch.evolve
 def breaker_priority(
     candidate: tuple[int, int],
@@ -44,31 +37,21 @@ def breaker_priority(
     breaker_cells: list[tuple[int, int]],
     active_shapes: list[tuple[tuple[int, int], ...]],
 ) -> float:
-  """Returns priority for Breaker choosing `candidate` cell.
-  
-  Higher score means Breaker prefers this cell to block Maker.
-  """
   m_set = set(maker_cells)
   b_set = set(breaker_cells)
   score = 0.0
-
   for shape in active_shapes:
     if candidate in shape:
-      # Block shapes where Maker is close to winning
       m_count = sum(1 for p in shape if p in m_set)
       score += float(10 ** m_count)
-      
   return score
-
 
 @funsearch.run
 def evaluate(grid_radius: int) -> float:
-  """Simulates Breaker playing with `breaker_priority` against the Elite Maker."""
   all_shapes = _get_board_shapes(radius=grid_radius)
   
   total_score = 0.0
   
-  # --- The Elite 280-point Maker (Sample 7) ---
   def elite_maker(m_cells, b_cells, active):
     m_set, b_set = set(m_cells), set(b_cells)
     candidates = set()
@@ -80,96 +63,112 @@ def evaluate(grid_radius: int) -> float:
     if not candidates:
         return (999, 999)
         
-    def priority(candidate, maker_cells, breaker_cells, active_shapes):
-        m_set = set(maker_cells)
-        b_set = set(breaker_cells)
-        weights = {0: 1.0, 1: 4.1, 2: 26.9, 3: 507.8, 4: 25000.0, 5: 1000000.0}
-        score = 0.0
-        active_count = 0
-        for shape in active_shapes:
-            if candidate in shape:
-                m_cnt = sum(1 for p in shape if p in m_set)
-                score += weights.get(m_cnt, 10.0 ** m_cnt)
-                active_count += 1
-        score += (active_count ** 1.3) * 2.97
-        score -= (abs(candidate[0]) + abs(candidate[1])) * 0.08
-        return float(score)
+    def priority(candidate: tuple[int, int], maker_cells: list[tuple[int, int]], breaker_cells: list[tuple[int, int]], active_shapes: list[tuple[tuple[int, int], ...]]) -> float:
+      m_set = set(maker_cells)
+      b_set = set(breaker_cells)
+      weights = {0: 1.0, 1: 4.1, 2: 26.9, 3: 507.8, 4: 25000.0, 5: 1000000.0}
+      score = 0.0
+      active_count = 0
+      for shape in active_shapes:
+        if candidate in shape:
+          m_cnt = sum(1 for p in shape if p in m_set)
+          score += weights.get(m_cnt, 10.0 ** m_cnt)
+          active_count += 1
+      score += (active_count ** 1.3) * 2.97
+      score -= (abs(candidate[0]) + abs(candidate[1])) * 0.08
+      return float(score)
 
     return max(candidates, key=lambda c: priority(c, m_cells, b_cells, active))
 
-  # Run simulations against the Elite Maker
-  m_cells, b_cells = [], []
-  maker_won = False
-  
-  for turn in range(25):  # Max plies
-    m_set = set(m_cells)
-    b_set = set(b_cells)
+  def checkerboard_maker(m_cells, b_cells, active):
+    m_set, b_set = set(m_cells), set(b_cells)
+    candidates = [p for s in active for p in s if p not in m_set and p not in b_set]
+    if not candidates: return (999, 999)
+    def is_cb(p): return ((p[0] // 2) + (p[1] // 2)) % 2 == 0
+    cb_cands = [c for c in candidates if is_cb(c)]
+    if cb_cands:
+      return max(cb_cands, key=lambda c: sum(1 for s in active if c in s))
+    return max(candidates, key=lambda c: sum(1 for s in active if c in s))
     
-    # Check if Maker already won
-    for s in all_shapes:
-      if s.issubset(m_set):
-        maker_won = True
-        break
-    if maker_won:
-      break
-      
-    # Active shapes not blocked by Breaker
-    active = [tuple(s) for s in all_shapes if not (s & b_set)]
-    if not active:
-      break
-      
-    # Maker moves first
-    m_move = elite_maker(m_cells, b_cells, active)
-    if m_move == (999, 999):
-      break
-    m_cells.append(m_move)
-    m_set.add(m_move)
-    
-    # Did Maker win on this move?
-    for s in all_shapes:
-      if s.issubset(m_set):
-        maker_won = True
-        break
-    if maker_won:
-      break
-      
-    # Breaker candidate moves
-    active = [tuple(s) for s in all_shapes if not (s & b_set)]
-    if not active:
-      break
-      
-    candidates = set()
+  def one_look_ahead_maker(m_cells, b_cells, active):
+    m_set, b_set = set(m_cells), set(b_cells)
+    candidates = [p for s in active for p in s if p not in m_set and p not in b_set]
+    if not candidates: return (999, 999)
     for s in active:
-      for p in s:
-        if p not in m_set and p not in b_set:
-          candidates.add(p)
-    if not candidates:
-      break
-      
-    # Breaker chooses move with highest priority
-    best_move = max(
-        candidates,
-        key=lambda c: breaker_priority(c, m_cells, b_cells, active)
-    )
-    b_cells.append(best_move)
-      
-  m_set = set(m_cells)
-  
-  if maker_won:
-    # Breaker failed to stop Maker. Score based on how many turns it delayed Maker.
-    # Turn starts at 0, max is 25. If maker wins early, Breaker gets low score.
-    # E.g., if maker wins on turn 13, Breaker gets 13 * 10 = 130.
-    total_score += float(turn * 10.0)
-  else:
-    # Breaker completely blocked Maker! Massive win bonus.
-    # Plus bonus based on how few cells Maker managed to get in its best shape.
-    max_cells_in_shape = max((len(s & m_set) for s in all_shapes), default=0)
-    # The fewer cells Maker got, the better the block!
-    # Max cells Maker can have without winning is 5.
-    block_quality = (5 - max_cells_in_shape) * 100.0
-    total_score += 1000.0 + block_quality + (25 - turn) * 10.0
+      if sum(1 for p in s if p in m_set) == 5:
+        for p in s:
+          if p not in m_set and p not in b_set:
+            return p
+    return max(candidates, key=lambda c: sum(1 for s in active if c in s))
+    
+  def higher_topo_paving_maker(m_cells, b_cells, active):
+    m_set, b_set = set(m_cells), set(b_cells)
+    candidates = [p for s in active for p in s if p not in m_set and p not in b_set]
+    if not candidates: return (999, 999)
+    def is_ht(p): return ((p[0] // 3) + (p[1] // 3)) % 2 == 0
+    ht_cands = [c for c in candidates if is_ht(c)]
+    if ht_cands:
+      return max(ht_cands, key=lambda c: sum(1 for s in active if c in s))
+    return max(candidates, key=lambda c: sum(1 for s in active if c in s))
 
-  return total_score
+  ensemble = [elite_maker, checkerboard_maker, one_look_ahead_maker, higher_topo_paving_maker]
+  for maker_fn in ensemble:
+    m_cells, b_cells = [], []
+    maker_won = False
+    
+    max_turns = (2 * grid_radius + 1) ** 2 // 2 + 1
+    for turn in range(max_turns):
+      m_set = set(m_cells)
+      b_set = set(b_cells)
+      
+      for s in all_shapes:
+        if s.issubset(m_set):
+          maker_won = True
+          break
+      if maker_won:
+        break
+        
+      active = [tuple(s) for s in all_shapes if not (s & b_set)]
+      if not active:
+        break
+        
+      m_move = maker_fn(m_cells, b_cells, active)
+      if m_move == (999, 999):
+        break
+      m_cells.append(m_move)
+      m_set.add(m_move)
+      
+      for s in all_shapes:
+        if s.issubset(m_set):
+          maker_won = True
+          break
+      if maker_won:
+        break
+        
+      active = [tuple(s) for s in all_shapes if not (s & b_set)]
+      if not active:
+        break
+        
+      candidates = set()
+      for s in active:
+        for p in s:
+          if p not in m_set and p not in b_set:
+            candidates.add(p)
+      if not candidates:
+        break
+        
+      best_move = max(candidates, key=lambda c: breaker_priority(c, m_cells, b_cells, active))
+      b_cells.append(best_move)
+        
+    m_set = set(m_cells)
+    
+    if maker_won:
+      total_score += float(turn * 10.0)
+    else:
+      max_cells_in_shape = max((len(s & m_set) for s in all_shapes), default=0)
+      block_quality = (5 - max_cells_in_shape) * 100.0
+      total_score += 1000.0 + block_quality + (max_turns - turn) * 10.0
+
+  return total_score / len(ensemble)
 '''
-
 INPUTS = [3, 4]
