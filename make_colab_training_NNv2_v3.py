@@ -396,9 +396,7 @@ notebook = {
                 "buffer = ReplayBuffer(capacity=100000)\n",
                 "\n",
                 "import re\n",
-                "drive_models = glob.glob(\"/content/drive/MyDrive/SnakyNet_v2_Checkpoints/snaky_large_model_it*.pt\")\n",
-                "root_models = glob.glob(\"/content/drive/MyDrive/snaky_large_model_it*.pt\")\n",
-                "all_models = drive_models + root_models\n",
+                "all_models = glob.glob(\"/content/drive/MyDrive/SnakyNet_v2_Checkpoints/snaky_large_model_it*.pt\")\n",
                 "\n",
                 "start_iteration = 13\n",
                 "if all_models:\n",
@@ -476,6 +474,6 @@ notebook = {
     "nbformat_minor": 0
 }
 
-with open("colab_training_NNv2_v2.ipynb", "w") as f:
+with open("colab_training_NNv2_v3.ipynb", "w") as f:
     json.dump(notebook, f, indent=2)
-print("colab_training_NNv2_v2.ipynb generated!")
+print("colab_training_NNv2_v3.ipynb generated!")
