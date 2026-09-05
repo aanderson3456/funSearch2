@@ -6,7 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "big_nn
 from resnet import SnakyNet
 
 print("Instantiating SnakyNet v2...")
-model = SnakyNet(num_resBlocks=16, num_channels=256, board_size=13)
+model = SnakyNet(in_channels=5, num_resBlocks=16, num_channels=256, board_size=13)
 print("Model created.")
 
 # Test input: Batch=2, Channels=5, Height=13, Width=13
