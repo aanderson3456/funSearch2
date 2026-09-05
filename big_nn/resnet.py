@@ -23,7 +23,7 @@ class SnakyNet(nn.Module):
         super().__init__()
         self.board_size = board_size
         self.startBlock = nn.Sequential(
-            nn.Conv2d(3, num_channels, 3, padding=1),
+            nn.Conv2d(5, num_channels, 3, padding=1),
             nn.BatchNorm2d(num_channels),
             nn.ReLU()
         )
