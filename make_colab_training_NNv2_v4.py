@@ -6,7 +6,7 @@ notebook = {
             "cell_type": "markdown",
             "metadata": {},
             "source": [
-                "# SnakyNet Massive 13x13 Self-Play Training on Colab Pro (VERSION 5)\n",
+                "# SnakyNet Massive 13x13 Self-Play Training on Colab Pro (NNv2)\n",
                 "This notebook trains the 13x13 AlphaGo-style ResNet for the Snakey game using Google Colab A100 GPUs.\n",
                 "**Updates in V5:** Completely rewrote the environment encoder and MCTS traversal algorithms. 100% of Python bottlenecks have been removed. This pushes the Python interpreter to its absolute theoretical limits. Expect < 5 minutes per generation!"
             ]
@@ -398,7 +398,7 @@ notebook = {
                 "import re\n",
                 "all_models = glob.glob(\"/content/drive/MyDrive/SnakyNet_v2_Checkpoints/snaky_large_model_it*.pt\")\n",
                 "\n",
-                "start_iteration = 13\n",
+                "start_iteration = 0\n",
                 "if all_models:\n",
                 "    def get_it(path):\n",
                 "        m = re.search(r'it(\\d+)\\.pt', path)\n",
@@ -474,6 +474,6 @@ notebook = {
     "nbformat_minor": 0
 }
 
-with open("colab_training_NNv2_v3.ipynb", "w") as f:
+with open("colab_training_NNv2_v4.ipynb", "w") as f:
     json.dump(notebook, f, indent=2)
-print("colab_training_NNv2_v3.ipynb generated!")
+print("colab_training_NNv2_v4.ipynb generated!")
