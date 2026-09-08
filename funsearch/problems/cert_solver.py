@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import importlib.util
 from pathlib import Path
 import time
 from typing import Any
@@ -42,11 +44,13 @@ class StrategyTreeSolver:
       grid_radius: int = 4,
       max_depth: int = 8,
       max_branching: int = 5,
+      heuristic_fn: Any = None,
   ) -> None:
     self.base_shape = base_shape
     self.grid_radius = grid_radius
     self.max_depth = max_depth
     self.max_branching = max_branching
+    self.heuristic_fn = heuristic_fn
 
     self.orientations = get_all_orientations(base_shape)
     self.all_shapes = get_board_shapes(base_shape, radius=grid_radius)
@@ -100,14 +104,18 @@ class StrategyTreeSolver:
       self._memo[state_key] = None
       return None
 
-    def move_score(p: tuple[int, int]) -> float:
-      score = 0.0
-      for s in active:
-        if p in s:
-          m_cnt = len(s & m_set)
-          score += float(10 ** m_cnt)
-      score -= (abs(p[0]) + abs(p[1])) * 0.1
-      return score
+    if self.heuristic_fn:
+      def move_score(p: tuple[int, int]) -> float:
+        return self.heuristic_fn(p, maker_cells, breaker_cells, active)
+    else:
+      def move_score(p: tuple[int, int]) -> float:
+        score = 0.0
+        for s in active:
+          if p in s:
+            m_cnt = len(s & m_set)
+            score += float(10 ** m_cnt)
+        score -= (abs(p[0]) + abs(p[1])) * 0.1
+        return score
 
     sorted_candidates = sorted(candidates, key=move_score, reverse=True)[: self.max_branching]
 
@@ -181,6 +189,7 @@ def main() -> None:
   parser.add_argument("--radius", type=int, default=4, help="Grid radius.")
   parser.add_argument("--depth", type=int, default=8, help="Max search depth in plies.")
   parser.add_argument("--output", type=str, default=None, help="Output JSON certificate file.")
+  parser.add_argument("--program", type=str, default=None, help="Path to FunSearch best_program.py to use its priority function.")
   args = parser.parse_args()
 
   poly_key = args.polyomino.lower()
@@ -191,8 +200,29 @@ def main() -> None:
   base_shape = POLYOMINO_SHAPES[poly_key]
   print(f"Solving {args.polyomino} with Threat-Space Search (radius={args.radius}, depth={args.depth})...")
 
+  heuristic_fn = None
+  if args.program:
+    prog_path = os.path.abspath(args.program)
+    if os.path.exists(prog_path):
+      print(f"Loading evolved heuristic from {prog_path}...")
+      spec = importlib.util.spec_from_file_location("best_program", prog_path)
+      module = importlib.util.module_from_spec(spec)
+      spec.loader.exec_module(module)
+      if hasattr(module, 'priority'):
+        heuristic_fn = module.priority
+        print("Successfully loaded 'priority' heuristic!")
+      else:
+        print("Warning: 'priority' function not found in the provided program file.")
+    else:
+      print(f"Warning: Program file {prog_path} does not exist. Using default heuristic.")
+
   t0 = time.time()
-  solver = StrategyTreeSolver(base_shape=base_shape, grid_radius=args.radius, max_depth=args.depth)
+  solver = StrategyTreeSolver(
+      base_shape=base_shape,
+      grid_radius=args.radius,
+      max_depth=args.depth,
+      heuristic_fn=heuristic_fn,
+  )
   cert = solver.generate_certificate()
   dt = time.time() - t0
 
