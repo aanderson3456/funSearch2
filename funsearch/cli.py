@@ -102,6 +102,17 @@ def build_parser() -> argparse.ArgumentParser:
       help="Enable boost mode: in-process evaluation, accelerated island migration, and fast temperature decay.",
   )
   parser.add_argument(
+      "--in-process",
+      action="store_true",
+      help="Use fast in-process sandbox evaluation without resetting islands rapidly.",
+  )
+  parser.add_argument(
+      "--reset-period",
+      type=int,
+      default=None,
+      help="Reset period in seconds for weakest islands (default: 4 hours, or 15s in boost).",
+  )
+  parser.add_argument(
       "--no-advanced",
       action="store_true",
       help="Disable advanced evolutionary operators (MAP-Elites, Diagnostic Traces, Semantic Crossover, Ring Migration).",
@@ -131,7 +142,13 @@ def main() -> None:
     problem_name = spec_path.stem
 
   # Configure Database & Engine
-  reset_period = 15 if args.boost else 4 * 60 * 60
+  if args.reset_period is not None:
+    reset_period = args.reset_period
+  elif args.boost:
+    reset_period = 15
+  else:
+    reset_period = 4 * 60 * 60
+
   temp_period = 100 if args.boost else 30_000
   db_config = ProgramsDatabaseConfig(
       num_islands=args.islands,
@@ -147,7 +164,7 @@ def main() -> None:
       model_name=args.model,
       temperature=args.temperature,
       output_dir=args.output_dir,
-      boost_mode=args.boost,
+      boost_mode=args.boost or args.in_process,
       advanced_evolution=not args.no_advanced,
   )
 

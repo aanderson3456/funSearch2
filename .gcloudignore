@@ -1,0 +1,13 @@
+.git
+.gitignore
+.venv
+visuals_venv
+__pycache__
+*.pyc
+*.pt
+outputs
+*.html
+*.json
+node_modules
+.pytest_cache
+FUTURE_PROJECTS

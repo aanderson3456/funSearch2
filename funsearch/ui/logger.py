@@ -47,6 +47,12 @@ class ExperimentLogger:
     with open(self.events_file, "a", encoding="utf-8") as f:
       f.write(json.dumps(record) + "\n")
 
+    if is_new_best or iteration % 25 == 0 or iteration <= 5:
+      print(
+          f"[FUNSEARCH ITERATION {iteration}] status={status} score={score} island={island_id} new_best={is_new_best}",
+          flush=True,
+      )
+
   def save_best_program(self, program: Function, score: float, iteration: int) -> None:
     """Saves the current best program to best_program.py and an indexed checkpoint."""
     code_content = f"# FunSearch Best Discovered Program\n# Problem: {self.problem_name}\n# Score: {score}\n# Discovered at iteration: {iteration}\n# Timestamp: {time.ctime()}\n\n{str(program)}"
@@ -57,3 +63,12 @@ class ExperimentLogger:
     ckpt_file = self.programs_dir / f"prog_iter_{iteration}_score_{score:.2f}.py"
     with open(ckpt_file, "w", encoding="utf-8") as f:
       f.write(code_content)
+
+    print(
+        f"\n=======================================================\n"
+        f"🏆 [NEW GLOBAL CHAMPION] Iteration {iteration} | Score: {score:.2f}\n"
+        f"-------------------------------------------------------\n"
+        f"{str(program)}\n"
+        f"=======================================================\n",
+        flush=True,
+    )
