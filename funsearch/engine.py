@@ -11,9 +11,11 @@ from absl import logging
 from funsearch.core import code_manipulation
 from funsearch.core import config as config_lib
 from funsearch.core.programs_database import ProgramsDatabase
+from funsearch.core.advanced_evolution import AdvancedProgramsDatabase
 from funsearch.llm.base import LLM, Sampler
 from funsearch.sandbox.base import Evaluator
 from funsearch.sandbox.process_sandbox import ProcessSandbox
+from funsearch.sandbox.in_process_sandbox import InProcessSandbox
 from funsearch.ui.live_dashboard import LiveDashboard
 from funsearch.ui.logger import ExperimentLogger
 
@@ -53,11 +55,19 @@ class FunSearchEngine:
     self.function_to_evolve, self.function_to_run = _extract_function_names(specification)
     self.template = code_manipulation.text_to_program(specification)
 
-    self.database = ProgramsDatabase(
-        config.programs_database, self.template, self.function_to_evolve
-    )
+    if getattr(config, "advanced_evolution", True):
+      self.database = AdvancedProgramsDatabase(
+          config.programs_database, self.template, self.function_to_evolve
+      )
+    else:
+      self.database = ProgramsDatabase(
+          config.programs_database, self.template, self.function_to_evolve
+      )
     self.logger = ExperimentLogger(config.output_dir, problem_name)
-    self.sandbox = ProcessSandbox()
+    if getattr(config, "boost_mode", False):
+      self.sandbox = InProcessSandbox()
+    else:
+      self.sandbox = ProcessSandbox()
 
     self.dashboard: LiveDashboard | None = None
     if self.enable_live_ui:

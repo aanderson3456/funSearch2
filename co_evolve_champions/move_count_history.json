@@ -1,0 +1,1002 @@
+[
+  {
+    "generation": 1,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 9.625,
+    "breaker_top_score": 1187.5,
+    "breaker_avg_moves": 21.05,
+    "clash_winner": "Breaker",
+    "clash_turns": 29,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 2,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.825,
+    "breaker_top_score": 1215.0,
+    "breaker_avg_moves": 22.025,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 3,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 12.075,
+    "breaker_top_score": 1215.0,
+    "breaker_avg_moves": 20.725,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 4,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.425,
+    "breaker_top_score": 1217.5,
+    "breaker_avg_moves": 22.025,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 5,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.65,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 20.725,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 6,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.65,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.6,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 7,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.625,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.2,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 8,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.95,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.225,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 9,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.9,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.075,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 10,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.925,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.6,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 11,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.85,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 20.125,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 12,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.8,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.6,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 13,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 12.25,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.675,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 14,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.5,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.55,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 15,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.85,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.35,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 16,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.925,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 20.75,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 17,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.85,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.8,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 18,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.65,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.675,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 19,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 12.0,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 20.875,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 20,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.45,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.925,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 21,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.675,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.6,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 22,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.925,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.525,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 23,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 12.025,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.575,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 24,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.8,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 20.85,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 25,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 12.025,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.7,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 26,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.7,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 20.4,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 27,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.325,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.575,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 28,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.8,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.025,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 29,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 12.1,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 20.925,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 30,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.775,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.05,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 31,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 12.15,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.8,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 32,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 12.125,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.8,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 33,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.55,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.575,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 34,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.95,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 20.575,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 35,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.2,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.275,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 36,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.575,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.25,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 37,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 12.2,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.325,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 38,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.9,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 20.95,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 39,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.825,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.3,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 40,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.525,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.55,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 41,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.675,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 20.85,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 42,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.6,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 20.675,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 43,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 12.075,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.475,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 44,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 12.225,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.625,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 45,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 12.3,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.1,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 46,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.275,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.6,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 47,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.675,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.0,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 48,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 10.875,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.825,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 49,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 10.95,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 20.375,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 50,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 12.05,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.375,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 51,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.85,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.425,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 52,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.85,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 20.6,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 53,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.25,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.825,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 54,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.7,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 22.425,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 55,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.9,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.875,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 56,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 10.5,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.525,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 57,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.1,
+    "breaker_top_score": 1242.5,
+    "breaker_avg_moves": 21.6,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 58,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 11.575,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.85,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 59,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.0,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.3,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 60,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.725,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 20.85,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 61,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.25,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 20.875,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 62,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.45,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.925,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 63,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.075,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.0,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 64,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.175,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.325,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 65,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.2,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.9,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 66,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.025,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.15,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 67,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.05,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 20.4,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 68,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.3,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 22.45,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 69,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 7.95,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.4,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 70,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.35,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 22.1,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 71,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.15,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.8,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 72,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.225,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 20.9,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 73,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.2,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 22.175,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 74,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.125,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.325,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 75,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.475,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 22.25,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 76,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.1,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.575,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 77,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.025,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.65,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 78,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.4,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.15,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 79,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.525,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 22.075,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 80,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.6,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.575,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 81,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.075,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 20.975,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 82,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.125,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 20.575,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 83,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.625,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.775,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 84,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.325,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 20.125,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 85,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.1,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 22.75,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 86,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.1,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.775,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 87,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.6,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.425,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 88,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.55,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.775,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 89,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.1,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.775,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 90,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.125,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.35,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 91,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.475,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 20.875,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 92,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.0,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.975,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 93,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.55,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 22.65,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 94,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.375,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 22.25,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 95,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.175,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.9,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 96,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.55,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 22.0,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 97,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.375,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 21.275,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 98,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.175,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 20.675,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 99,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.825,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 22.225,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  },
+  {
+    "generation": 100,
+    "maker_top_score": 960.0,
+    "maker_avg_moves": 8.125,
+    "breaker_top_score": 1245.0,
+    "breaker_avg_moves": 20.65,
+    "clash_winner": "Breaker",
+    "clash_turns": 27,
+    "clash_max_cells": 5
+  }
+]

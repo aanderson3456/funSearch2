@@ -6,6 +6,7 @@ funsearch/engine.py
 funsearch/generate_visualizer.py
 funsearch/interactive_evaluator.py
 funsearch/core/__init__.py
+funsearch/core/advanced_evolution.py
 funsearch/core/code_manipulation.py
 funsearch/core/config.py
 funsearch/core/programs_database.py
@@ -28,6 +29,7 @@ funsearch/problems/snakey_lean_transpiler.py
 funsearch/problems/straightomino.py
 funsearch/sandbox/__init__.py
 funsearch/sandbox/base.py
+funsearch/sandbox/in_process_sandbox.py
 funsearch/sandbox/process_sandbox.py
 funsearch/ui/__init__.py
 funsearch/ui/live_dashboard.py
@@ -38,6 +40,7 @@ funsearch_scratch.egg-info/dependency_links.txt
 funsearch_scratch.egg-info/entry_points.txt
 funsearch_scratch.egg-info/requires.txt
 funsearch_scratch.egg-info/top_level.txt
+tests/test_advanced_evolution.py
 tests/test_code_manipulation.py
 tests/test_engine.py
 tests/test_programs_database.py

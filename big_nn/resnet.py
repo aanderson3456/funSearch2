@@ -19,7 +19,7 @@ class ResBlock(nn.Module):
         return x
 
 class SnakyNet(nn.Module):
-    def __init__(self, num_resBlocks=16, num_channels=256, board_size=13, in_channels=3):
+    def __init__(self, num_resBlocks=16, num_channels=256, board_size=13, in_channels=7):
         super().__init__()
         self.board_size = board_size
         self.startBlock = nn.Sequential(

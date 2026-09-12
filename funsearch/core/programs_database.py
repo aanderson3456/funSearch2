@@ -255,6 +255,15 @@ class ProgramsDatabase:
     self._total_programs_evaluated: int = 0
     self._total_programs_registered: int = 0
     self._last_reset_time: float = time.time()
+    self._migration_history: list[dict[str, Any]] = []
+
+  @property
+  def migration_history(self) -> list[dict[str, Any]]:
+    return self._migration_history
+
+  @property
+  def temperatures_per_island(self) -> list[float]:
+    return [island.temperature for island in self._islands]
 
   @property
   def total_programs_registered(self) -> int:
@@ -332,12 +341,23 @@ class ProgramsDatabase:
     bottom_indices = indices[:num_reset]
     top_indices = indices[num_reset:]
 
+    migration_record = {
+        "timestamp": time.time(),
+        "total_programs_registered": self._total_programs_registered,
+        "migrations": [],
+    }
     for bottom_idx in bottom_indices:
-      donor_idx = np.random.choice(top_indices)
+      donor_idx = int(np.random.choice(top_indices))
       self._islands[bottom_idx] = copy.deepcopy(self._islands[donor_idx])
       self._best_score_per_island[bottom_idx] = self._best_score_per_island[donor_idx]
       self._best_program_per_island[bottom_idx] = copy.deepcopy(self._best_program_per_island[donor_idx])
       self._best_scores_per_test_per_island[bottom_idx] = copy.deepcopy(self._best_scores_per_test_per_island[donor_idx])
+      migration_record["migrations"].append({
+          "bottom_island": int(bottom_idx),
+          "donor_island": int(donor_idx),
+          "donor_score": float(self._best_score_per_island[donor_idx]),
+      })
 
+    self._migration_history.append(migration_record)
     self._last_reset_time = time.time()
     logging.info(f"Islands reset complete. Bottom {num_reset} replaced.")

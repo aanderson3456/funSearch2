@@ -96,6 +96,16 @@ def build_parser() -> argparse.ArgumentParser:
       action="store_true",
       help="Disable live Rich dashboard UI.",
   )
+  parser.add_argument(
+      "--boost",
+      action="store_true",
+      help="Enable boost mode: in-process evaluation, accelerated island migration, and fast temperature decay.",
+  )
+  parser.add_argument(
+      "--no-advanced",
+      action="store_true",
+      help="Disable advanced evolutionary operators (MAP-Elites, Diagnostic Traces, Semantic Crossover, Ring Migration).",
+  )
   return parser
 
 
@@ -121,9 +131,13 @@ def main() -> None:
     problem_name = spec_path.stem
 
   # Configure Database & Engine
+  reset_period = 15 if args.boost else 4 * 60 * 60
+  temp_period = 100 if args.boost else 30_000
   db_config = ProgramsDatabaseConfig(
       num_islands=args.islands,
       functions_per_prompt=2,
+      reset_period=reset_period,
+      cluster_sampling_temperature_period=temp_period,
   )
   config = Config(
       programs_database=db_config,
@@ -133,6 +147,8 @@ def main() -> None:
       model_name=args.model,
       temperature=args.temperature,
       output_dir=args.output_dir,
+      boost_mode=args.boost,
+      advanced_evolution=not args.no_advanced,
   )
 
   # Initialize LLM Sampler

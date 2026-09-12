@@ -12,16 +12,16 @@ from funsearch.llm.base import LLM
 
 
 def _strip_markdown_code_fences(text: str) -> str:
-  """Removes markdown code fences (```python ... ```) if present."""
+  """Extracts Python code from markdown code fences if present, or returns stripped text."""
   text = text.strip()
-  # If wrapped entirely in code block
+  match = re.search(r'```(?:python|py)?\s*\n(.*?)\n```', text, re.DOTALL)
+  if match:
+    return match.group(1).strip("\n\r")
   if text.startswith("```"):
-    first_newline = text.find("\n")
-    if first_newline != -1:
-      text = text[first_newline + 1 :]
-    if text.endswith("```"):
-      text = text[:-3]
-  return text.strip("\n")
+    lines = text.splitlines()
+    if len(lines) >= 2:
+      return "\n".join(lines[1:-1] if lines[-1].strip().startswith("```") else lines[1:]).strip("\n\r")
+  return text
 
 
 class GeminiLLM(LLM):
@@ -33,7 +33,7 @@ class GeminiLLM(LLM):
       api_key: str | None = None,
       samples_per_prompt: int = 1,
       temperature: float = 0.7,
-      max_tokens: int = 2048,
+      max_tokens: int = 4096,
       system_instruction: str | None = None,
   ) -> None:
     super().__init__(samples_per_prompt=samples_per_prompt, temperature=temperature)
@@ -50,10 +50,10 @@ class GeminiLLM(LLM):
     self._client = None
     self._use_legacy = False
     self._system_instruction = system_instruction or (
-        "You are an expert mathematician and algorithm designer. "
-        "Complete the requested Python function implementation. "
-        "Output ONLY the function body code (properly indented with 2 or 4 spaces). "
-        "Do NOT include conversational text, explanations, or enclosing markdown tags."
+        "You are an expert algorithm designer. You will be provided with a Python program "
+        "and a target function to complete. Output the completed function body (properly indented) "
+        "or the complete function definition inside a ```python ``` code block. "
+        "Do NOT include conversational explanations or commentary."
     )
 
     self._init_client()

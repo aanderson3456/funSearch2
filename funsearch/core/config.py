@@ -50,3 +50,5 @@ class Config:
   model_name: str = "gemini-3.7-flash"
   temperature: float = 0.7
   output_dir: Path | str = "./outputs"
+  boost_mode: bool = False
+  advanced_evolution: bool = True

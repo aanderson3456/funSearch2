@@ -1,0 +1,264 @@
+{
+    "elos": {
+        "NNv1": 942.48,
+        "NNv2": 946.14,
+        "NNv3_it72": 1025.79,
+        "FunSearch": 1085.6
+    },
+    "rankings": [
+        {
+            "rank": 1,
+            "name": "FunSearch",
+            "elo": 1085.6,
+            "wins": 6,
+            "losses": 0,
+            "win_pct": 100.0,
+            "maker_record": "3-0",
+            "maker_win_pct": 100.0,
+            "breaker_record": "3-0",
+            "breaker_win_pct": 100.0,
+            "avg_turns": 28.0
+        },
+        {
+            "rank": 2,
+            "name": "NNv3_it72",
+            "elo": 1025.8,
+            "wins": 4,
+            "losses": 2,
+            "win_pct": 66.7,
+            "maker_record": "2-1",
+            "maker_win_pct": 66.7,
+            "breaker_record": "2-1",
+            "breaker_win_pct": 66.7,
+            "avg_turns": 42.2
+        },
+        {
+            "rank": 3,
+            "name": "NNv2",
+            "elo": 946.1,
+            "wins": 1,
+            "losses": 5,
+            "win_pct": 16.7,
+            "maker_record": "1-2",
+            "maker_win_pct": 33.3,
+            "breaker_record": "0-3",
+            "breaker_win_pct": 0.0,
+            "avg_turns": 31.5
+        },
+        {
+            "rank": 4,
+            "name": "NNv1",
+            "elo": 942.5,
+            "wins": 1,
+            "losses": 5,
+            "win_pct": 16.7,
+            "maker_record": "1-2",
+            "maker_win_pct": 33.3,
+            "breaker_record": "0-3",
+            "breaker_win_pct": 0.0,
+            "avg_turns": 34.0
+        }
+    ],
+    "role_statistics": {
+        "total_matches": 12,
+        "maker_wins": 7,
+        "breaker_wins": 5,
+        "maker_win_pct": 58.3,
+        "breaker_win_pct": 41.7,
+        "avg_game_length_turns": 33.9
+    },
+    "history": [
+        {
+            "match": 1,
+            "maker": "NNv1",
+            "breaker": "NNv2",
+            "winner": "NNv1",
+            "winning_role": "Maker",
+            "turns": 19,
+            "elo_before": {
+                "NNv1": 1000.0,
+                "NNv2": 1000.0
+            },
+            "elo_after": {
+                "NNv1": 1016.0,
+                "NNv2": 984.0
+            }
+        },
+        {
+            "match": 2,
+            "maker": "NNv1",
+            "breaker": "NNv3_it72",
+            "winner": "NNv3_it72",
+            "winning_role": "Breaker",
+            "turns": 62,
+            "elo_before": {
+                "NNv1": 1016.0,
+                "NNv3_it72": 1000.0
+            },
+            "elo_after": {
+                "NNv1": 999.3,
+                "NNv3_it72": 1016.7
+            }
+        },
+        {
+            "match": 3,
+            "maker": "NNv1",
+            "breaker": "FunSearch",
+            "winner": "FunSearch",
+            "winning_role": "Breaker",
+            "turns": 47,
+            "elo_before": {
+                "NNv1": 999.3,
+                "FunSearch": 1000.0
+            },
+            "elo_after": {
+                "NNv1": 983.3,
+                "FunSearch": 1016.0
+            }
+        },
+        {
+            "match": 4,
+            "maker": "NNv2",
+            "breaker": "NNv1",
+            "winner": "NNv2",
+            "winning_role": "Maker",
+            "turns": 26,
+            "elo_before": {
+                "NNv2": 984.0,
+                "NNv1": 983.3
+            },
+            "elo_after": {
+                "NNv2": 1000.0,
+                "NNv1": 967.3
+            }
+        },
+        {
+            "match": 5,
+            "maker": "NNv2",
+            "breaker": "NNv3_it72",
+            "winner": "NNv3_it72",
+            "winning_role": "Breaker",
+            "turns": 59,
+            "elo_before": {
+                "NNv2": 1000.0,
+                "NNv3_it72": 1016.7
+            },
+            "elo_after": {
+                "NNv2": 984.7,
+                "NNv3_it72": 1032.0
+            }
+        },
+        {
+            "match": 6,
+            "maker": "NNv2",
+            "breaker": "FunSearch",
+            "winner": "FunSearch",
+            "winning_role": "Breaker",
+            "turns": 50,
+            "elo_before": {
+                "NNv2": 984.7,
+                "FunSearch": 1016.0
+            },
+            "elo_after": {
+                "NNv2": 970.2,
+                "FunSearch": 1030.5
+            }
+        },
+        {
+            "match": 7,
+            "maker": "NNv3_it72",
+            "breaker": "NNv1",
+            "winner": "NNv3_it72",
+            "winning_role": "Maker",
+            "turns": 44,
+            "elo_before": {
+                "NNv3_it72": 1032.0,
+                "NNv1": 967.3
+            },
+            "elo_after": {
+                "NNv3_it72": 1045.0,
+                "NNv1": 954.3
+            }
+        },
+        {
+            "match": 8,
+            "maker": "NNv3_it72",
+            "breaker": "NNv2",
+            "winner": "NNv3_it72",
+            "winning_role": "Maker",
+            "turns": 29,
+            "elo_before": {
+                "NNv3_it72": 1045.0,
+                "NNv2": 970.2
+            },
+            "elo_after": {
+                "NNv3_it72": 1057.6,
+                "NNv2": 957.6
+            }
+        },
+        {
+            "match": 9,
+            "maker": "NNv3_it72",
+            "breaker": "FunSearch",
+            "winner": "FunSearch",
+            "winning_role": "Breaker",
+            "turns": 51,
+            "elo_before": {
+                "NNv3_it72": 1057.6,
+                "FunSearch": 1030.5
+            },
+            "elo_after": {
+                "NNv3_it72": 1040.4,
+                "FunSearch": 1047.8
+            }
+        },
+        {
+            "match": 10,
+            "maker": "FunSearch",
+            "breaker": "NNv1",
+            "winner": "FunSearch",
+            "winning_role": "Maker",
+            "turns": 6,
+            "elo_before": {
+                "FunSearch": 1047.8,
+                "NNv1": 954.3
+            },
+            "elo_after": {
+                "FunSearch": 1059.6,
+                "NNv1": 942.5
+            }
+        },
+        {
+            "match": 11,
+            "maker": "FunSearch",
+            "breaker": "NNv2",
+            "winner": "FunSearch",
+            "winning_role": "Maker",
+            "turns": 6,
+            "elo_before": {
+                "FunSearch": 1059.6,
+                "NNv2": 957.6
+            },
+            "elo_after": {
+                "FunSearch": 1071.0,
+                "NNv2": 946.1
+            }
+        },
+        {
+            "match": 12,
+            "maker": "FunSearch",
+            "breaker": "NNv3_it72",
+            "winner": "FunSearch",
+            "winning_role": "Maker",
+            "turns": 8,
+            "elo_before": {
+                "FunSearch": 1071.0,
+                "NNv3_it72": 1040.4
+            },
+            "elo_after": {
+                "FunSearch": 1085.6,
+                "NNv3_it72": 1025.8
+            }
+        }
+    ]
+}
