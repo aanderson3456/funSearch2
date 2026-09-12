@@ -747,7 +747,7 @@ def main():
         print(f"\n--- Iteration {it}/{iterations} ---")
         model.eval()
         print("Starting Grandmaster Hybrid Self-Play (20% GM Maker + 20% GM Breaker Injection)...")
-        data, game_lengths = self_play(model, num_games=games_per_iter, mcts_searches=100, fs_maker_ratio=0.25, device=device)
+        data, game_lengths = self_play(model, num_games=games_per_iter, mcts_searches=100, fs_maker_ratio=0.20, fs_breaker_ratio=0.20, device=device)
         buffer.add(data)
         
         if len(buffer.buffer) >= batch_size:
