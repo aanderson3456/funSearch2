@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snaky Hexomino Grandmaster Replay | AI Co-Evolution</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0b0f19;
+      --panel-bg: #111827;
+      --card-bg: #1f2937;
+      --border-color: #374151;
+      --accent-maker: #06b6d4;
+      --accent-maker-glow: rgba(6, 182, 212, 0.4);
+      --accent-breaker: #f43f5e;
+      --accent-breaker-glow: rgba(244, 63, 94, 0.4);
+      --accent-gold: #fbbf24;
+      --text-main: #f3f4f6;
+      --text-dim: #9ca3af;
+      --font-code: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: radial-gradient(circle at top, #1e1b4b 0%, var(--bg-dark) 60%);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 9999px;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #a5b4fc;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #e0e7ff 0%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+    p.subtitle {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    /* Top Mode Toggle */
+    .match-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .toggle-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-dim);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toggle-btn:hover {
+      border-color: #6366f1;
+      color: #fff;
+    }
+    .toggle-btn.active {
+      background: #4f46e5;
+      color: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 16px rgba(79, 70, 229, 0.4);
+    }
+    /* Main Layout */
+    .arena-container {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+      width: 100%;
+      max-width: 1240px;
+    }
+    @media (max-width: 960px) {
+      .arena-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* Board Area */
+    .board-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .board-wrapper {
+      position: relative;
+      margin: 16px 0;
+      background: #0d1322;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+    }
+    .grid-board {
+      display: grid;
+      gap: 4px;
+      user-select: none;
+    }
+    .grid-cell {
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-family: var(--font-code);
+      color: rgba(255, 255, 255, 0.2);
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .grid-cell:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .grid-cell.maker {
+      background: linear-gradient(135deg, #0891b2, #06b6d4);
+      border-color: #67e8f9;
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 0 12px var(--accent-maker-glow);
+      transform: scale(0.96);
+    }
+    .grid-cell.breaker {
+      background: linear-gradient(135deg, #e11d48, #f43f5e);
+      border-color: #fda4af;
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 0 12px var(--accent-breaker-glow);
+      transform: scale(0.96);
+    }
+    .grid-cell.winning-shape {
+      background: linear-gradient(135deg, #d97706, #fbbf24) !important;
+      border-color: #fef08a !important;
+      color: #000 !important;
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.8) !important;
+      animation: pulseWin 1.5s infinite alternate;
+      z-index: 10;
+    }
+    @keyframes pulseWin {
+      from { transform: scale(0.96); filter: brightness(1); }
+      to { transform: scale(1.04); filter: brightness(1.3); }
+    }
+    .grid-cell.last-move {
+      outline: 3px solid #fbbf24;
+      outline-offset: 2px;
+      z-index: 5;
+    }
+    .cell-num {
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+    .cell-coord {
+      font-size: 0.55rem;
+      opacity: 0.7;
+    }
+    /* Control Bar */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      max-width: 540px;
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .timeline-slider {
+      flex: 1;
+      accent-color: #6366f1;
+      height: 6px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .btn-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .ctrl-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .ctrl-btn:hover {
+      background: #374151;
+      border-color: #6366f1;
+    }
+    .ctrl-btn.play {
+      background: #4f46e5;
+      border-color: #6366f1;
+      color: #fff;
+    }
+    .ctrl-btn.play:hover {
+      background: #4338ca;
+    }
+    /* Sidebar / HUD */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .hud-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .hud-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .stat-item {
+      background: var(--card-bg);
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .stat-val {
+      font-size: 1.25rem;
+      font-weight: 800;
+      font-family: var(--font-code);
+    }
+    .stat-val.maker { color: var(--accent-maker); }
+    .stat-val.breaker { color: var(--accent-breaker); }
+    .stat-val.gold { color: var(--accent-gold); }
+    /* Gauge Bar */
+    .gauge-wrapper {
+      margin-top: 10px;
+    }
+    .gauge-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .gauge-bar {
+      height: 8px;
+      background: #1e293b;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+    }
+    .gauge-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #06b6d4, #fbbf24);
+      transition: width 0.3s ease;
+    }
+    /* Move Log */
+    .log-container {
+      max-height: 280px;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      background: #0d1322;
+      font-family: var(--font-code);
+      font-size: 0.8rem;
+    }
+    .log-entry {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .log-entry:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .log-entry.active {
+      background: rgba(99, 102, 241, 0.25);
+      border-left: 3px solid #818cf8;
+    }
+    .log-maker { color: var(--accent-maker); }
+    .log-breaker { color: var(--accent-breaker); }
+    /* Commentary Box */
+    .commentary-box {
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      color: #e0e7ff;
+      min-height: 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge">DeepMind Advanced Agentic Coding</div>
+    <h1>Snaky Polyomino Grandmaster Replay</h1>
+    <p class="subtitle">
+      Adversarial showdown between the Evolved Grandmaster Maker and Grandmaster Breaker.
+      Experience the exact turn-by-turn maneuvers that define the 40-year open problem boundary.
+    </p>
+  </header>
+
+  <div class="match-toggle">
+    <button class="toggle-btn active" id="btn-9x9" onclick="switchMatch('9x9')">
+      🛡️ 9x9 Duel: Grandmaster Breaker Total Denial (27 Turns)
+    </button>
+    <button class="toggle-btn" id="btn-10x10" onclick="switchMatch('10x10')">
+      ⚔️ 10x10 Duel: Grandmaster Maker Breakthrough (19 Turns)
+    </button>
+  </div>
+
+  <div class="arena-container">
+    
+    <!-- Board Card -->
+    <div class="board-card">
+      <div id="status-banner" style="font-weight: 700; font-size: 1rem; color: #a5b4fc; margin-bottom: 4px;">
+        Match Active
+      </div>
+      <div class="board-wrapper">
+        <div id="grid-board" class="grid-board"></div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <div class="slider-row">
+          <span style="font-family: var(--font-code); font-size: 0.8rem; color: var(--text-dim);" id="step-counter">0 / 0</span>
+          <input type="range" id="timeline-slider" class="timeline-slider" min="0" max="100" value="0" oninput="onSliderChange(this.value)">
+          <span style="font-family: var(--font-code); font-size: 0.8rem; color: var(--text-dim);" id="turn-counter">Turn 1</span>
+        </div>
+        <div class="btn-row">
+          <button class="ctrl-btn" onclick="stepTo(0)">⏮ Reset</button>
+          <button class="ctrl-btn" onclick="stepBy(-1)">◀ Prev</button>
+          <button class="ctrl-btn play" id="play-btn" onclick="togglePlay()">▶ Play</button>
+          <button class="ctrl-btn" onclick="stepBy(1)">Next ▶</button>
+          <button class="ctrl-btn" onclick="stepTo(currentMatch.total_steps)">End ⏭</button>
+          <button class="ctrl-btn" id="speed-btn" onclick="toggleSpeed()">1x</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar HUD -->
+    <div class="sidebar">
+      <div class="hud-card">
+        <div class="hud-title">
+          <span>Live Match Telemetry</span>
+          <span id="player-indicator" class="badge">Maker's Move</span>
+        </div>
+        
+        <div class="stat-grid">
+          <div class="stat-item">
+            <div class="stat-label">Maker Stones</div>
+            <div class="stat-val maker" id="stat-maker-stones">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Breaker Stones</div>
+            <div class="stat-val breaker" id="stat-breaker-stones">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Active Snaky Shapes</div>
+            <div class="stat-val gold" id="stat-active-shapes">320</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Max Completed Cells</div>
+            <div class="stat-val" id="stat-max-cells">0 / 6</div>
+          </div>
+        </div>
+
+        <div class="gauge-wrapper">
+          <div class="gauge-header">
+            <span>Snaky Hexomino Completion</span>
+            <span id="gauge-pct">0%</span>
+          </div>
+          <div class="gauge-bar">
+            <div class="gauge-fill" id="gauge-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tactical Commentary -->
+      <div class="hud-card">
+        <div class="hud-title">Tactical Commentary</div>
+        <div class="commentary-box" id="commentary-text">
+          Select a match and press Play to observe the tactical maneuvers.
+        </div>
+      </div>
+
+      <!-- Move Log -->
+      <div class="hud-card" style="flex: 1; display: flex; flex-direction: column;">
+        <div class="hud-title">Move Notation Log</div>
+        <div class="log-container" id="log-container"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const MATCH_DATA = {
+      "9x9": {"board_size": 9, "coord_type": "centered", "winner": "Breaker", "total_turns": 27, "total_steps": 54, "history": [{"step": 1, "turn": 1, "player": "Maker", "coord": [0, -2], "maker_cells": [[0, -2]], "breaker_cells": [], "active_shapes": 320, "max_cells": 1, "won": false, "comment": "Maker opens on outer ring at (0, -2) to avoid central congestion."}, {"step": 2, "turn": 1, "player": "Breaker", "coord": [-1, -2], "maker_cells": [[0, -2]], "breaker_cells": [[-1, -2]], "active_shapes": 286, "max_cells": 1, "won": false, "comment": "SMOTHER CLAMP: Breaker clings to Maker stone at (-1, -2)."}, {"step": 3, "turn": 2, "player": "Maker", "coord": [2, 0], "maker_cells": [[0, -2], [2, 0]], "breaker_cells": [[-1, -2]], "active_shapes": 286, "max_cells": 1, "won": false, "comment": "Maker claims (2, 0)."}, {"step": 4, "turn": 2, "player": "Breaker", "coord": [1, 0], "maker_cells": [[0, -2], [2, 0]], "breaker_cells": [[-1, -2], [1, 0]], "active_shapes": 242, "max_cells": 1, "won": false, "comment": "SMOTHER CLAMP: Breaker clings to Maker stone at (1, 0)."}, {"step": 5, "turn": 3, "player": "Maker", "coord": [-1, 2], "maker_cells": [[0, -2], [2, 0], [-1, 2]], "breaker_cells": [[-1, -2], [1, 0]], "active_shapes": 242, "max_cells": 2, "won": false, "comment": "Maker claims (-1, 2)."}, {"step": 6, "turn": 3, "player": "Breaker", "coord": [-1, 3], "maker_cells": [[0, -2], [2, 0], [-1, 2]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3]], "active_shapes": 212, "max_cells": 2, "won": false, "comment": "SMOTHER CLAMP: Breaker clings to Maker stone at (-1, 3)."}, {"step": 7, "turn": 4, "player": "Maker", "coord": [2, 1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3]], "active_shapes": 212, "max_cells": 2, "won": false, "comment": "Maker claims (2, 1)."}, {"step": 8, "turn": 4, "player": "Breaker", "coord": [2, -1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1]], "active_shapes": 189, "max_cells": 2, "won": false, "comment": "Breaker replies at (2, -1)."}, {"step": 9, "turn": 5, "player": "Maker", "coord": [0, 2], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1]], "active_shapes": 189, "max_cells": 3, "won": false, "comment": "Maker claims (0, 2)."}, {"step": 10, "turn": 5, "player": "Breaker", "coord": [1, 1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1]], "active_shapes": 170, "max_cells": 3, "won": false, "comment": "Breaker replies at (1, 1)."}, {"step": 11, "turn": 6, "player": "Maker", "coord": [1, 2], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1]], "active_shapes": 170, "max_cells": 4, "won": false, "comment": "Maker establishes 4-cell foundation at (1, 2)."}, {"step": 12, "turn": 6, "player": "Breaker", "coord": [-2, 2], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2]], "active_shapes": 153, "max_cells": 4, "won": false, "comment": "Breaker replies at (-2, 2)."}, {"step": 13, "turn": 7, "player": "Maker", "coord": [2, 2], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2]], "active_shapes": 153, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (2, 2)!"}, {"step": 14, "turn": 7, "player": "Breaker", "coord": [3, 1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1]], "active_shapes": 135, "max_cells": 5, "won": false, "comment": "Breaker replies at (3, 1)."}, {"step": 15, "turn": 8, "player": "Maker", "coord": [2, 3], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1]], "active_shapes": 135, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (2, 3)!"}, {"step": 16, "turn": 8, "player": "Breaker", "coord": [3, 3], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3]], "active_shapes": 122, "max_cells": 5, "won": false, "comment": "SMOTHER CLAMP: Breaker clings to Maker stone at (3, 3)."}, {"step": 17, "turn": 9, "player": "Maker", "coord": [-2, 1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3]], "active_shapes": 122, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (-2, 1)!"}, {"step": 18, "turn": 9, "player": "Breaker", "coord": [-1, 1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1]], "active_shapes": 106, "max_cells": 5, "won": false, "comment": "SMOTHER CLAMP: Breaker clings to Maker stone at (-1, 1)."}, {"step": 19, "turn": 10, "player": "Maker", "coord": [1, 3], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1]], "active_shapes": 106, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (1, 3)!"}, {"step": 20, "turn": 10, "player": "Breaker", "coord": [1, 4], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4]], "active_shapes": 101, "max_cells": 5, "won": false, "comment": "SMOTHER CLAMP: Breaker clings to Maker stone at (1, 4)."}, {"step": 21, "turn": 11, "player": "Maker", "coord": [3, -1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4]], "active_shapes": 101, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (3, -1)!"}, {"step": 22, "turn": 11, "player": "Breaker", "coord": [3, 0], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0]], "active_shapes": 94, "max_cells": 5, "won": false, "comment": "SMOTHER CLAMP: Breaker clings to Maker stone at (3, 0)."}, {"step": 23, "turn": 12, "player": "Maker", "coord": [1, -2], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0]], "active_shapes": 94, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (1, -2)!"}, {"step": 24, "turn": 12, "player": "Breaker", "coord": [3, -2], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2]], "active_shapes": 83, "max_cells": 5, "won": false, "comment": "Breaker replies at (3, -2)."}, {"step": 25, "turn": 13, "player": "Maker", "coord": [-2, -1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2]], "active_shapes": 83, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (-2, -1)!"}, {"step": 26, "turn": 13, "player": "Breaker", "coord": [0, -1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1]], "active_shapes": 68, "max_cells": 5, "won": false, "comment": "Breaker replies at (0, -1)."}, {"step": 27, "turn": 14, "player": "Maker", "coord": [-2, 0], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1]], "active_shapes": 68, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (-2, 0)!"}, {"step": 28, "turn": 14, "player": "Breaker", "coord": [-2, -2], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2]], "active_shapes": 58, "max_cells": 5, "won": false, "comment": "Breaker replies at (-2, -2)."}, {"step": 29, "turn": 15, "player": "Maker", "coord": [2, -2], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2]], "active_shapes": 58, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (2, -2)!"}, {"step": 30, "turn": 15, "player": "Breaker", "coord": [3, 2], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2]], "active_shapes": 57, "max_cells": 5, "won": false, "comment": "Breaker replies at (3, 2)."}, {"step": 31, "turn": 16, "player": "Maker", "coord": [-3, -3], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2]], "active_shapes": 57, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (-3, -3)!"}, {"step": 32, "turn": 16, "player": "Breaker", "coord": [-3, -1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1]], "active_shapes": 42, "max_cells": 5, "won": false, "comment": "Breaker replies at (-3, -1)."}, {"step": 33, "turn": 17, "player": "Maker", "coord": [0, -3], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1]], "active_shapes": 42, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (0, -3)!"}, {"step": 34, "turn": 17, "player": "Breaker", "coord": [-1, -3], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3]], "active_shapes": 29, "max_cells": 5, "won": false, "comment": "SMOTHER CLAMP: Breaker clings to Maker stone at (-1, -3)."}, {"step": 35, "turn": 18, "player": "Maker", "coord": [-3, 1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3]], "active_shapes": 29, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (-3, 1)!"}, {"step": 36, "turn": 18, "player": "Breaker", "coord": [-3, 2], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2]], "active_shapes": 21, "max_cells": 5, "won": false, "comment": "SMOTHER CLAMP: Breaker clings to Maker stone at (-3, 2)."}, {"step": 37, "turn": 19, "player": "Maker", "coord": [1, -3], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2]], "active_shapes": 21, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (1, -3)!"}, {"step": 38, "turn": 19, "player": "Breaker", "coord": [0, -4], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4]], "active_shapes": 13, "max_cells": 5, "won": false, "comment": "Breaker replies at (0, -4)."}, {"step": 39, "turn": 20, "player": "Maker", "coord": [3, -3], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4]], "active_shapes": 13, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (3, -3)!"}, {"step": 40, "turn": 20, "player": "Breaker", "coord": [4, -3], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3]], "active_shapes": 11, "max_cells": 5, "won": false, "comment": "SMOTHER CLAMP: Breaker clings to Maker stone at (4, -3)."}, {"step": 41, "turn": 21, "player": "Maker", "coord": [3, -4], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3]], "active_shapes": 11, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (3, -4)!"}, {"step": 42, "turn": 21, "player": "Breaker", "coord": [4, -4], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3], [4, -4]], "active_shapes": 9, "max_cells": 5, "won": false, "comment": "SMOTHER CLAMP: Breaker clings to Maker stone at (4, -4)."}, {"step": 43, "turn": 22, "player": "Maker", "coord": [-4, 1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4], [-4, 1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3], [4, -4]], "active_shapes": 9, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (-4, 1)!"}, {"step": 44, "turn": 22, "player": "Breaker", "coord": [-3, 0], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4], [-4, 1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3], [4, -4], [-3, 0]], "active_shapes": 6, "max_cells": 5, "won": false, "comment": "Breaker replies at (-3, 0)."}, {"step": 45, "turn": 23, "player": "Maker", "coord": [-4, 0], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4], [-4, 1], [-4, 0]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3], [4, -4], [-3, 0]], "active_shapes": 6, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (-4, 0)!"}, {"step": 46, "turn": 23, "player": "Breaker", "coord": [-4, -3], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4], [-4, 1], [-4, 0]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3], [4, -4], [-3, 0], [-4, -3]], "active_shapes": 5, "max_cells": 5, "won": false, "comment": "Breaker replies at (-4, -3)."}, {"step": 47, "turn": 24, "player": "Maker", "coord": [-4, -1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4], [-4, 1], [-4, 0], [-4, -1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3], [4, -4], [-3, 0], [-4, -3]], "active_shapes": 5, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (-4, -1)!"}, {"step": 48, "turn": 24, "player": "Breaker", "coord": [-3, -2], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4], [-4, 1], [-4, 0], [-4, -1]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3], [4, -4], [-3, 0], [-4, -3], [-3, -2]], "active_shapes": 4, "max_cells": 5, "won": false, "comment": "Breaker replies at (-3, -2)."}, {"step": 49, "turn": 25, "player": "Maker", "coord": [-3, 4], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4], [-4, 1], [-4, 0], [-4, -1], [-3, 4]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3], [4, -4], [-3, 0], [-4, -3], [-3, -2]], "active_shapes": 4, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (-3, 4)!"}, {"step": 50, "turn": 25, "player": "Breaker", "coord": [0, 1], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4], [-4, 1], [-4, 0], [-4, -1], [-3, 4]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3], [4, -4], [-3, 0], [-4, -3], [-3, -2], [0, 1]], "active_shapes": 3, "max_cells": 5, "won": false, "comment": "Breaker replies at (0, 1)."}, {"step": 51, "turn": 26, "player": "Maker", "coord": [-3, 3], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4], [-4, 1], [-4, 0], [-4, -1], [-3, 4], [-3, 3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3], [4, -4], [-3, 0], [-4, -3], [-3, -2], [0, 1]], "active_shapes": 3, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (-3, 3)!"}, {"step": 52, "turn": 26, "player": "Breaker", "coord": [-4, 3], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4], [-4, 1], [-4, 0], [-4, -1], [-3, 4], [-3, 3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3], [4, -4], [-3, 0], [-4, -3], [-3, -2], [0, 1], [-4, 3]], "active_shapes": 1, "max_cells": 5, "won": false, "comment": "SMOTHER CLAMP: Breaker clings to Maker stone at (-4, 3)."}, {"step": 53, "turn": 27, "player": "Maker", "coord": [0, 3], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4], [-4, 1], [-4, 0], [-4, -1], [-3, 4], [-3, 3], [0, 3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3], [4, -4], [-3, 0], [-4, -3], [-3, -2], [0, 1], [-4, 3]], "active_shapes": 1, "max_cells": 5, "won": false, "comment": "CRITICAL THREAT: Maker forms 5-cell Snaky structure with (0, 3)!"}, {"step": 54, "turn": 27, "player": "Breaker", "coord": [0, 4], "maker_cells": [[0, -2], [2, 0], [-1, 2], [2, 1], [0, 2], [1, 2], [2, 2], [2, 3], [-2, 1], [1, 3], [3, -1], [1, -2], [-2, -1], [-2, 0], [2, -2], [-3, -3], [0, -3], [-3, 1], [1, -3], [3, -3], [3, -4], [-4, 1], [-4, 0], [-4, -1], [-3, 4], [-3, 3], [0, 3]], "breaker_cells": [[-1, -2], [1, 0], [-1, 3], [2, -1], [1, 1], [-2, 2], [3, 1], [3, 3], [-1, 1], [1, 4], [3, 0], [3, -2], [0, -1], [-2, -2], [3, 2], [-3, -1], [-1, -3], [-3, 2], [0, -4], [4, -3], [4, -4], [-3, 0], [-4, -3], [-3, -2], [0, 1], [-4, 3], [0, 4]], "active_shapes": 0, "max_cells": 5, "won": false, "comment": "SMOTHER CLAMP: Breaker clings to Maker stone at (0, 4)."}], "winning_shape": null},
+      "10x10": {"board_size": 10, "coord_type": "zero_indexed", "winner": "Maker", "total_turns": 19, "total_steps": 37, "history": [{"step": 1, "turn": 1, "player": "Maker", "coord": [2, 2], "maker_cells": [[2, 2]], "breaker_cells": [], "active_shapes": 432, "max_cells": 1, "won": false, "comment": "Maker plays at (2, 2)."}, {"step": 2, "turn": 1, "player": "Breaker", "coord": [3, 2], "maker_cells": [[2, 2]], "breaker_cells": [[3, 2]], "active_shapes": 398, "max_cells": 1, "won": false, "comment": "Breaker blocks at (3, 2)."}, {"step": 3, "turn": 2, "player": "Maker", "coord": [2, 1], "maker_cells": [[2, 2], [2, 1]], "breaker_cells": [[3, 2]], "active_shapes": 398, "max_cells": 2, "won": false, "comment": "Maker plays at (2, 1)."}, {"step": 4, "turn": 2, "player": "Breaker", "coord": [2, 3], "maker_cells": [[2, 2], [2, 1]], "breaker_cells": [[3, 2], [2, 3]], "active_shapes": 370, "max_cells": 2, "won": false, "comment": "Breaker blocks at (2, 3)."}, {"step": 5, "turn": 3, "player": "Maker", "coord": [1, 2], "maker_cells": [[2, 2], [2, 1], [1, 2]], "breaker_cells": [[3, 2], [2, 3]], "active_shapes": 370, "max_cells": 3, "won": false, "comment": "Maker plays at (1, 2)."}, {"step": 6, "turn": 3, "player": "Breaker", "coord": [1, 1], "maker_cells": [[2, 2], [2, 1], [1, 2]], "breaker_cells": [[3, 2], [2, 3], [1, 1]], "active_shapes": 356, "max_cells": 3, "won": false, "comment": "Breaker blocks at (1, 1)."}, {"step": 7, "turn": 4, "player": "Maker", "coord": [0, 2], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2]], "breaker_cells": [[3, 2], [2, 3], [1, 1]], "active_shapes": 356, "max_cells": 3, "won": false, "comment": "Maker plays at (0, 2)."}, {"step": 8, "turn": 4, "player": "Breaker", "coord": [0, 1], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1]], "active_shapes": 353, "max_cells": 3, "won": false, "comment": "Breaker blocks at (0, 1)."}, {"step": 9, "turn": 5, "player": "Maker", "coord": [2, 0], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1]], "active_shapes": 353, "max_cells": 3, "won": false, "comment": "Maker plays at (2, 0)."}, {"step": 10, "turn": 5, "player": "Breaker", "coord": [1, 0], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0]], "active_shapes": 350, "max_cells": 3, "won": false, "comment": "Breaker blocks at (1, 0)."}, {"step": 11, "turn": 6, "player": "Maker", "coord": [5, 1], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0]], "active_shapes": 350, "max_cells": 4, "won": false, "comment": "Maker plays at (5, 1)."}, {"step": 12, "turn": 6, "player": "Breaker", "coord": [4, 1], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1]], "active_shapes": 329, "max_cells": 4, "won": false, "comment": "Breaker blocks at (4, 1)."}, {"step": 13, "turn": 7, "player": "Maker", "coord": [1, 5], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1]], "active_shapes": 329, "max_cells": 4, "won": false, "comment": "Maker plays at (1, 5)."}, {"step": 14, "turn": 7, "player": "Breaker", "coord": [1, 4], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4]], "active_shapes": 308, "max_cells": 4, "won": false, "comment": "Breaker blocks at (1, 4)."}, {"step": 15, "turn": 8, "player": "Maker", "coord": [5, 6], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4]], "active_shapes": 308, "max_cells": 4, "won": false, "comment": "Maker plays at (5, 6)."}, {"step": 16, "turn": 8, "player": "Breaker", "coord": [5, 5], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5]], "active_shapes": 264, "max_cells": 4, "won": false, "comment": "Breaker blocks at (5, 5)."}, {"step": 17, "turn": 9, "player": "Maker", "coord": [4, 6], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5]], "active_shapes": 264, "max_cells": 4, "won": false, "comment": "Maker plays at (4, 6)."}, {"step": 18, "turn": 9, "player": "Breaker", "coord": [2, 5], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5]], "active_shapes": 245, "max_cells": 4, "won": false, "comment": "Breaker blocks at (2, 5)."}, {"step": 19, "turn": 10, "player": "Maker", "coord": [6, 6], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5]], "active_shapes": 245, "max_cells": 4, "won": false, "comment": "Maker plays at (6, 6)."}, {"step": 20, "turn": 10, "player": "Breaker", "coord": [7, 6], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6]], "active_shapes": 215, "max_cells": 4, "won": false, "comment": "Breaker blocks at (7, 6)."}, {"step": 21, "turn": 11, "player": "Maker", "coord": [3, 6], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6]], "active_shapes": 215, "max_cells": 4, "won": false, "comment": "Maker plays at (3, 6)."}, {"step": 22, "turn": 11, "player": "Breaker", "coord": [2, 6], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6]], "active_shapes": 203, "max_cells": 4, "won": false, "comment": "Breaker blocks at (2, 6)."}, {"step": 23, "turn": 12, "player": "Maker", "coord": [3, 7], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6]], "active_shapes": 203, "max_cells": 5, "won": false, "comment": "THREAT: Maker creates 5-threat fork at (3, 7)!"}, {"step": 24, "turn": 12, "player": "Breaker", "coord": [2, 7], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7]], "active_shapes": 190, "max_cells": 5, "won": false, "comment": "Breaker blocks at (2, 7)."}, {"step": 25, "turn": 13, "player": "Maker", "coord": [4, 5], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7], [4, 5]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7]], "active_shapes": 190, "max_cells": 5, "won": false, "comment": "THREAT: Maker creates 5-threat fork at (4, 5)!"}, {"step": 26, "turn": 13, "player": "Breaker", "coord": [4, 4], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7], [4, 5]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7], [4, 4]], "active_shapes": 168, "max_cells": 5, "won": false, "comment": "Breaker blocks at (4, 4)."}, {"step": 27, "turn": 14, "player": "Maker", "coord": [6, 7], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7], [4, 5], [6, 7]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7], [4, 4]], "active_shapes": 168, "max_cells": 5, "won": false, "comment": "THREAT: Maker creates 5-threat fork at (6, 7)!"}, {"step": 28, "turn": 14, "player": "Breaker", "coord": [7, 7], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7], [4, 5], [6, 7]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7], [4, 4], [7, 7]], "active_shapes": 154, "max_cells": 5, "won": false, "comment": "Breaker blocks at (7, 7)."}, {"step": 29, "turn": 15, "player": "Maker", "coord": [6, 5], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7], [4, 5], [6, 7], [6, 5]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7], [4, 4], [7, 7]], "active_shapes": 154, "max_cells": 5, "won": false, "comment": "THREAT: Maker creates 5-threat fork at (6, 5)!"}, {"step": 30, "turn": 15, "player": "Breaker", "coord": [7, 5], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7], [4, 5], [6, 7], [6, 5]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7], [4, 4], [7, 7], [7, 5]], "active_shapes": 143, "max_cells": 5, "won": false, "comment": "Breaker blocks at (7, 5)."}, {"step": 31, "turn": 16, "player": "Maker", "coord": [6, 4], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7], [4, 5], [6, 7], [6, 5], [6, 4]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7], [4, 4], [7, 7], [7, 5]], "active_shapes": 143, "max_cells": 5, "won": false, "comment": "THREAT: Maker creates 5-threat fork at (6, 4)!"}, {"step": 32, "turn": 16, "player": "Breaker", "coord": [5, 7], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7], [4, 5], [6, 7], [6, 5], [6, 4]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7], [4, 4], [7, 7], [7, 5], [5, 7]], "active_shapes": 133, "max_cells": 5, "won": false, "comment": "Breaker blocks at (5, 7)."}, {"step": 33, "turn": 17, "player": "Maker", "coord": [6, 3], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7], [4, 5], [6, 7], [6, 5], [6, 4], [6, 3]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7], [4, 4], [7, 7], [7, 5], [5, 7]], "active_shapes": 133, "max_cells": 5, "won": false, "comment": "THREAT: Maker creates 5-threat fork at (6, 3)!"}, {"step": 34, "turn": 17, "player": "Breaker", "coord": [5, 3], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7], [4, 5], [6, 7], [6, 5], [6, 4], [6, 3]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7], [4, 4], [7, 7], [7, 5], [5, 7], [5, 3]], "active_shapes": 115, "max_cells": 5, "won": false, "comment": "Breaker blocks at (5, 3)."}, {"step": 35, "turn": 18, "player": "Maker", "coord": [7, 3], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7], [4, 5], [6, 7], [6, 5], [6, 4], [6, 3], [7, 3]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7], [4, 4], [7, 7], [7, 5], [5, 7], [5, 3]], "active_shapes": 115, "max_cells": 5, "won": false, "comment": "THREAT: Maker creates 5-threat fork at (7, 3)!"}, {"step": 36, "turn": 18, "player": "Breaker", "coord": [7, 4], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7], [4, 5], [6, 7], [6, 5], [6, 4], [6, 3], [7, 3]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7], [4, 4], [7, 7], [7, 5], [5, 7], [5, 3], [7, 4]], "active_shapes": 105, "max_cells": 5, "won": false, "comment": "Breaker blocks at (7, 4)."}, {"step": 37, "turn": 19, "player": "Maker", "coord": [7, 2], "maker_cells": [[2, 2], [2, 1], [1, 2], [0, 2], [2, 0], [5, 1], [1, 5], [5, 6], [4, 6], [6, 6], [3, 6], [3, 7], [4, 5], [6, 7], [6, 5], [6, 4], [6, 3], [7, 3], [7, 2]], "breaker_cells": [[3, 2], [2, 3], [1, 1], [0, 1], [1, 0], [4, 1], [1, 4], [5, 5], [2, 5], [7, 6], [2, 6], [2, 7], [4, 4], [7, 7], [7, 5], [5, 7], [5, 3], [7, 4]], "active_shapes": 105, "max_cells": 6, "won": true, "comment": "VICTORY: Maker completes Snaky Hexomino at (7, 2)! 6/6 Cells connected!"}], "winning_shape": [[6, 3], [6, 4], [6, 5], [6, 6], [7, 2], [7, 3]]}
+    };
+
+    let currentMode = "9x9";
+    let currentMatch = MATCH_DATA[currentMode];
+    let currentStep = 0;
+    let isPlaying = false;
+    let playInterval = null;
+    let playSpeed = 600;
+
+    function initBoard() {
+      const boardEl = document.getElementById("grid-board");
+      boardEl.innerHTML = "";
+      const size = currentMatch.board_size;
+      boardEl.style.gridTemplateColumns = `repeat(${size}, 44px)`;
+
+      const offset = currentMatch.coord_type === "centered" ? 4 : 0;
+
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+          const cell = document.createElement("div");
+          cell.className = "grid-cell";
+          
+          let x, y;
+          if (currentMatch.coord_type === "centered") {
+            x = c - offset;
+            y = offset - r; // standard cartesian
+          } else {
+            x = c;
+            y = r;
+          }
+          
+          cell.dataset.x = x;
+          cell.dataset.y = y;
+          cell.id = `cell-${x}-${y}`;
+          cell.innerHTML = `<span class="cell-coord">${x},${y}</span>`;
+          boardEl.appendChild(cell);
+        }
+      }
+
+      // Init timeline
+      const slider = document.getElementById("timeline-slider");
+      slider.max = currentMatch.total_steps;
+      slider.value = 0;
+      currentStep = 0;
+
+      buildLog();
+      renderStep(0);
+    }
+
+    function buildLog() {
+      const container = document.getElementById("log-container");
+      container.innerHTML = "";
+      currentMatch.history.forEach((h, idx) => {
+        const row = document.createElement("div");
+        row.className = "log-entry";
+        row.id = `log-entry-${idx + 1}`;
+        row.onclick = () => stepTo(idx + 1);
+        
+        const pClass = h.player === "Maker" ? "log-maker" : "log-breaker";
+        row.innerHTML = `
+          <span><b>T${h.turn}</b> <span class="${pClass}">${h.player}</span></span>
+          <span>(${h.coord[0]}, ${h.coord[1]})</span>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function renderStep(step) {
+      currentStep = step;
+      document.getElementById("timeline-slider").value = step;
+      document.getElementById("step-counter").innerText = `${step} / ${currentMatch.total_steps}`;
+
+      // Clear all board cells
+      document.querySelectorAll(".grid-cell").forEach(c => {
+        c.className = "grid-cell";
+        const coordSpan = c.querySelector(".cell-coord");
+        c.innerHTML = "";
+        if (coordSpan) c.appendChild(coordSpan);
+      });
+
+      if (step === 0) {
+        document.getElementById("turn-counter").innerText = "Turn 1";
+        document.getElementById("stat-maker-stones").innerText = "0";
+        document.getElementById("stat-breaker-stones").innerText = "0";
+        document.getElementById("stat-active-shapes").innerText = currentMatch.board_size === 9 ? "320" : "432";
+        document.getElementById("stat-max-cells").innerText = "0 / 6";
+        document.getElementById("gauge-fill").style.width = "0%";
+        document.getElementById("gauge-pct").innerText = "0%";
+        document.getElementById("commentary-text").innerText = "Match start. Both players begin with zero stones on the board.";
+        document.getElementById("player-indicator").innerText = "Maker to Play";
+        document.getElementById("player-indicator").style.color = "var(--accent-maker)";
+        document.getElementById("status-banner").innerText = "Match in Progress";
+        return;
+      }
+
+      const data = currentMatch.history[step - 1];
+      document.getElementById("turn-counter").innerText = `Turn ${data.turn}`;
+      document.getElementById("stat-maker-stones").innerText = data.maker_cells.length;
+      document.getElementById("stat-breaker-stones").innerText = data.breaker_cells.length;
+      document.getElementById("stat-active-shapes").innerText = data.active_shapes;
+      document.getElementById("stat-max-cells").innerText = `${data.max_cells} / 6`;
+      
+      const pct = Math.round((data.max_cells / 6) * 100);
+      document.getElementById("gauge-fill").style.width = `${pct}%`;
+      document.getElementById("gauge-pct").innerText = `${pct}%`;
+      document.getElementById("commentary-text").innerText = data.comment;
+
+      // Update indicator
+      const nextPlayer = data.player === "Maker" ? "Breaker to Play" : "Maker to Play";
+      document.getElementById("player-indicator").innerText = nextPlayer;
+      document.getElementById("player-indicator").style.color = data.player === "Maker" ? "var(--accent-breaker)" : "var(--accent-maker)";
+
+      // Highlight cells
+      data.maker_cells.forEach((c, idx) => {
+        const el = document.getElementById(`cell-${c[0]}-${c[1]}`);
+        if (el) {
+          el.classList.add("maker");
+          el.innerHTML = `<span class="cell-num">M${idx + 1}</span><span class="cell-coord">${c[0]},${c[1]}</span>`;
+        }
+      });
+
+      data.breaker_cells.forEach((c, idx) => {
+        const el = document.getElementById(`cell-${c[0]}-${c[1]}`);
+        if (el) {
+          el.classList.add("breaker");
+          el.innerHTML = `<span class="cell-num">B${idx + 1}</span><span class="cell-coord">${c[0]},${c[1]}</span>`;
+        }
+      });
+
+      // Last move highlight
+      const lastEl = document.getElementById(`cell-${data.coord[0]}-${data.coord[1]}`);
+      if (lastEl) lastEl.classList.add("last-move");
+
+      // Winning shape highlight
+      if (data.won && currentMatch.winning_shape) {
+        currentMatch.winning_shape.forEach(c => {
+          const winEl = document.getElementById(`cell-${c[0]}-${c[1]}`);
+          if (winEl) winEl.classList.add("winning-shape");
+        });
+        document.getElementById("status-banner").innerText = "🏆 MAKER BREAKTHROUGH VICTORY (6/6 CELLS)!";
+        document.getElementById("status-banner").style.color = "#fbbf24";
+      } else if (step === currentMatch.total_steps && currentMatch.winner === "Breaker") {
+        document.getElementById("status-banner").innerText = "🛡️ BREAKER TOTAL DENIAL VICTORY (SHUTDOWN AT 5/6)!";
+        document.getElementById("status-banner").style.color = "#f43f5e";
+      } else {
+        document.getElementById("status-banner").innerText = "Match in Progress";
+        document.getElementById("status-banner").style.color = "#a5b4fc";
+      }
+
+      // Scroll active log entry into view
+      document.querySelectorAll(".log-entry").forEach(e => e.classList.remove("active"));
+      const activeLog = document.getElementById(`log-entry-${step}`);
+      if (activeLog) {
+        activeLog.classList.add("active");
+        activeLog.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    }
+
+    function onSliderChange(val) {
+      pause();
+      renderStep(parseInt(val, 10));
+    }
+
+    function stepBy(delta) {
+      pause();
+      const target = Math.max(0, Math.min(currentMatch.total_steps, currentStep + delta));
+      renderStep(target);
+    }
+
+    function stepTo(target) {
+      pause();
+      renderStep(target);
+    }
+
+    function togglePlay() {
+      if (isPlaying) pause();
+      else play();
+    }
+
+    function play() {
+      if (currentStep >= currentMatch.total_steps) currentStep = 0;
+      isPlaying = true;
+      document.getElementById("play-btn").innerText = "⏸ Pause";
+      playInterval = setInterval(() => {
+        if (currentStep < currentMatch.total_steps) {
+          renderStep(currentStep + 1);
+        } else {
+          pause();
+        }
+      }, playSpeed);
+    }
+
+    function pause() {
+      isPlaying = false;
+      document.getElementById("play-btn").innerText = "▶ Play";
+      clearInterval(playInterval);
+    }
+
+    function toggleSpeed() {
+      const btn = document.getElementById("speed-btn");
+      if (playSpeed === 600) {
+        playSpeed = 300;
+        btn.innerText = "2x";
+      } else if (playSpeed === 300) {
+        playSpeed = 150;
+        btn.innerText = "4x";
+      } else {
+        playSpeed = 600;
+        btn.innerText = "1x";
+      }
+      if (isPlaying) {
+        pause();
+        play();
+      }
+    }
+
+    function switchMatch(mode) {
+      pause();
+      currentMode = mode;
+      currentMatch = MATCH_DATA[mode];
+      document.getElementById("btn-9x9").classList.toggle("active", mode === "9x9");
+      document.getElementById("btn-10x10").classList.toggle("active", mode === "10x10");
+      initBoard();
+    }
+
+    window.onload = () => {
+      initBoard();
+    };
+  </script>
+</body>
+</html>
